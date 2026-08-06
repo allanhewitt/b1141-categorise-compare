@@ -87,6 +87,17 @@ export default function Respond() {
     setSelectedItem(null);
   };
 
+  // Dragging a placed chip back onto the pool removes it from every
+  // category it's currently in (relevant mainly for non-exclusive
+  // activities, where an item can hold more than one category).
+  const unassignAll = async (item) => {
+    const current = assignments[item] || [];
+    await Promise.all(current.map((cat) => toggle(item, cat)));
+  };
+
+  const [dragOverCat, setDragOverCat] = useState(null);
+  const [dragOverPool, setDragOverPool] = useState(false);
+
   if (error) {
     return (
       <div className="wrap">
@@ -110,11 +121,24 @@ export default function Respond() {
       <h1>{config.prompt}</h1>
       <p className="muted small-top">
         {config.exclusive
-          ? "Tap a term, then tap the category it fits."
-          : "Tap a term, then tap every category it fits — a term can carry more than one."}
+          ? "Drag a term into a category, or tap it then tap the category it fits."
+          : "Drag a term into every category it fits, or tap it then tap each category — a term can carry more than one."}
       </p>
 
-      <div className="pool">
+      <div
+        className={`pool${dragOverPool ? " pool-dragover" : ""}`}
+        onDragOver={(e) => {
+          e.preventDefault();
+          setDragOverPool(true);
+        }}
+        onDragLeave={() => setDragOverPool(false)}
+        onDrop={(e) => {
+          e.preventDefault();
+          setDragOverPool(false);
+          const item = e.dataTransfer.getData("text/plain");
+          if (item) unassignAll(item);
+        }}
+      >
         {unassigned.length === 0 ? (
           <span className="muted">All sorted</span>
         ) : (
@@ -122,6 +146,8 @@ export default function Respond() {
             <button
               key={item}
               type="button"
+              draggable
+              onDragStart={(e) => e.dataTransfer.setData("text/plain", item)}
               className={`chip${selectedItem === item ? " chip-selected" : ""}`}
               onClick={() => setSelectedItem((prev) => (prev === item ? null : item))}
             >
@@ -137,9 +163,21 @@ export default function Respond() {
           const placed = config.items.filter((item) => (assignments[item] || []).includes(cat));
           return (
             <div
-              className="sort-bucket"
+              className={`sort-bucket${dragOverCat === cat ? " sort-bucket-dragover" : ""}`}
               key={cat}
+              style={dragOverCat === cat ? { borderColor: color } : undefined}
               onClick={() => selectedItem && toggle(selectedItem, cat)}
+              onDragOver={(e) => {
+                e.preventDefault();
+                setDragOverCat(cat);
+              }}
+              onDragLeave={() => setDragOverCat((prev) => (prev === cat ? null : prev))}
+              onDrop={(e) => {
+                e.preventDefault();
+                setDragOverCat(null);
+                const item = e.dataTransfer.getData("text/plain");
+                if (item) toggle(item, cat);
+              }}
             >
               <div className="sort-bucket-header">
                 <span className="category-dot" style={{ background: color }} />
@@ -150,6 +188,8 @@ export default function Respond() {
                   <button
                     key={item}
                     type="button"
+                    draggable
+                    onDragStart={(e) => e.dataTransfer.setData("text/plain", item)}
                     className="chip chip-placed"
                     style={{ background: `${color}22`, color }}
                     onClick={(e) => {

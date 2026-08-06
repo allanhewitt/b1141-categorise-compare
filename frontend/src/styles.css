@@ -67,6 +67,12 @@ body {
   border: 1.5px dashed #c3cbd4;
   border-radius: 10px;
   margin-bottom: 20px;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.pool-dragover {
+  border-color: var(--navy);
+  background: #eef3f8;
 }
 
 .chip {
@@ -99,26 +105,31 @@ body {
 
 .sort-buckets {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-  gap: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: 14px;
   margin-bottom: 12px;
 }
 
 .sort-bucket {
-  border: 0.5px solid #dbe2e8;
+  border: 2px solid #dbe2e8;
   border-radius: 12px;
-  padding: 14px;
-  min-height: 90px;
+  padding: 18px;
+  min-height: 150px;
   background: white;
   cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.sort-bucket-dragover {
+  background: #f7fafc;
 }
 
 .sort-bucket-header {
   display: flex;
   align-items: center;
   gap: 6px;
-  margin-bottom: 10px;
-  font-size: 0.85rem;
+  margin-bottom: 12px;
+  font-size: 0.9rem;
   font-weight: 600;
   color: var(--muted);
 }
@@ -126,7 +137,7 @@ body {
 .sort-bucket-chips {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
+  gap: 8px;
 }
 
 .category-dot {
