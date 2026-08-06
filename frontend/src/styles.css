@@ -1,0 +1,222 @@
+:root {
+  --navy: #102f55;
+  --blue: #1f5f99;
+  --gold: #b67818;
+  --bg: #f7f9fb;
+  --text: #17202a;
+  --muted: #5d6d7e;
+  --danger: #8f2d2d;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: "Aptos", "Segoe UI", system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+}
+
+.muted {
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+.muted.small {
+  font-size: 0.85rem;
+  margin-top: 20px;
+}
+
+.small-top {
+  margin-top: 0;
+  margin-bottom: 20px;
+}
+
+.error {
+  color: var(--danger);
+}
+
+.wrap {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 48px 24px;
+  min-height: 100vh;
+}
+
+.wrap-wide {
+  max-width: 780px;
+}
+
+.wrap h1 {
+  font-size: clamp(1.1rem, 3.2vw, 1.5rem);
+  line-height: 1.35;
+  color: var(--navy);
+  margin: 0 0 8px;
+}
+
+/* ---- Pool + chips ---- */
+
+.pool {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  min-height: 40px;
+  padding: 12px;
+  border: 1.5px dashed #c3cbd4;
+  border-radius: 10px;
+  margin-bottom: 20px;
+}
+
+.chip {
+  padding: 8px 14px;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  border: 1.5px solid var(--blue);
+  background: white;
+  color: var(--blue);
+  cursor: pointer;
+}
+
+.chip:hover {
+  background: #eef6ff;
+}
+
+.chip-selected {
+  border-color: var(--navy);
+  background: var(--navy);
+  color: white;
+}
+
+.chip-placed {
+  border: none;
+  font-weight: 600;
+}
+
+/* ---- Sort buckets ---- */
+
+.sort-buckets {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.sort-bucket {
+  border: 0.5px solid #dbe2e8;
+  border-radius: 12px;
+  padding: 14px;
+  min-height: 90px;
+  background: white;
+  cursor: pointer;
+}
+
+.sort-bucket-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 10px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.sort-bucket-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.category-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+/* ---- Category-box aggregate view (shared) ---- */
+
+.category-boxes {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 12px;
+}
+
+.category-box {
+  border: 0.5px solid #dbe2e8;
+  border-radius: 12px;
+  padding: 14px;
+  background: white;
+}
+
+.category-box-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+
+.category-entry {
+  margin-bottom: 8px;
+}
+
+.category-entry-line {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.8rem;
+  margin-bottom: 3px;
+}
+
+.category-entry-track {
+  height: 6px;
+  background: #eef1f4;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.category-entry-fill {
+  height: 100%;
+  border-radius: 3px;
+}
+
+/* ---- Confirmation / control shared bits ---- */
+
+.confirmation {
+  margin-top: 28px;
+  padding-top: 20px;
+  border-top: 0.5px solid #dbe2e8;
+}
+
+.controls {
+  display: flex;
+  gap: 12px;
+  margin: 20px 0;
+}
+
+.controls button {
+  padding: 10px 20px;
+  border-radius: 8px;
+  border: none;
+  font-weight: 600;
+  cursor: pointer;
+  background: var(--navy);
+  color: white;
+}
+
+.controls button:hover {
+  background: var(--blue);
+}
+
+.controls button.danger {
+  background: white;
+  color: var(--danger);
+  border: 1.5px solid var(--danger);
+}
+
+.controls button.danger:hover {
+  background: #f7e9e9;
+}
