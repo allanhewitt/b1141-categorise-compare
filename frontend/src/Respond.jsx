@@ -3,10 +3,11 @@ import { useParams } from "react-router-dom";
 import CategoryBoxes, { colorForCategory } from "./CategoryBoxes.jsx";
 
 const API = import.meta.env.VITE_API_BASE || "http://localhost:4000";
+const TOKEN_TTL_MS = 10 * 60 * 1000;
 
-// crypto.randomUUID() requires a secure context (HTTPS/localhost) — falls
-// back to a manual generator so this works on a plain http://*.sslip.io
-// deployment too (lesson from b1141-likert-poll).
+// Anonymous browser tokens are scoped to one activity and expire after
+// 10 minutes away from that activity. crypto.randomUUID() requires a secure
+// context, so keep the manual fallback for plain http://*.sslip.io deployments.
 function generateId() {
   if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
     try {
@@ -22,12 +23,35 @@ function generateId() {
   });
 }
 
+function currentActivityId() {
+  const parts = (window.location.hash || "").split("/").filter(Boolean);
+  return parts[parts.length - 1] || "unknown-activity";
+}
+
 function getToken() {
-  let token = localStorage.getItem("categorise-token");
-  if (!token) {
-    token = generateId();
-    localStorage.setItem("categorise-token", token);
+  const activityId = currentActivityId();
+  const storageKey = `gedl:${activityId}:participant`;
+  const now = Date.now();
+  let stored = null;
+
+  try {
+    stored = JSON.parse(localStorage.getItem(storageKey));
+  } catch {
+    stored = null;
   }
+
+  if (
+    stored?.token &&
+    Number.isFinite(stored.lastSeen) &&
+    now - stored.lastSeen < TOKEN_TTL_MS
+  ) {
+    localStorage.setItem(storageKey, JSON.stringify({ token: stored.token, lastSeen: now }));
+    return stored.token;
+  }
+
+  const token = generateId();
+  localStorage.setItem(storageKey, JSON.stringify({ token, lastSeen: now }));
+  localStorage.removeItem("categorise-token");
   return token;
 }
 
