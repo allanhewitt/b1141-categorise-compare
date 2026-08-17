@@ -67,3 +67,19 @@ INSERT INTO activities (
   false,
   'threshold', 0.8, 45, true
 ) ON CONFLICT (id) DO NOTHING;
+
+-- Week Three seed: "Political or non-political?"
+-- Students commit before the neutrality/hegemony teaching. Manual reveal keeps
+-- the cohort distribution hidden until the lecturer chooses to surface it.
+INSERT INTO activities (
+  id, module, week, activity, sequence,
+  prompt, items, categories, exclusive,
+  reveal_mode, reveal_threshold, cohort_size, active
+) VALUES (
+  'b1141-w3-political-or-non-political', 'B1141', 3, 'political-or-non-political', 1,
+  'For each act, decide whether you would normally describe it as political, not political, or whether you are unsure. Use the same principle for every case.',
+  '["Kneeling during the national anthem", "Singing the national anthem before a match", "Wearing a remembrance poppy on a shirt", "Wearing an armband supporting a social cause", "A military flypast before a major sporting event", "Refusing to take part in an official remembrance ceremony"]'::jsonb,
+  '["Political", "Not political", "Unsure"]'::jsonb,
+  true,
+  'manual', NULL, 45, true
+) ON CONFLICT (id) DO NOTHING;
