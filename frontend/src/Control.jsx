@@ -70,6 +70,27 @@ export default function Control() {
         classification{config.cohort_size ? ` (of ~${config.cohort_size})` : ""}.
       </p>
 
+      <div style={{ margin: "18px 0 4px" }}>
+        <a
+          href={`#/display/${id}`}
+          target="_blank"
+          rel="noreferrer"
+          style={{
+            display: "inline-block",
+            padding: "9px 15px",
+            borderRadius: 9,
+            border: "1.5px solid #1f5f99",
+            color: "#1f5f99",
+            background: "#fff",
+            fontWeight: 700,
+            fontSize: 14,
+            textDecoration: "none",
+          }}
+        >
+          Open projector display ↗
+        </a>
+      </div>
+
       <div className="control-grid">
         <div className="control-card">
           <span className="control-label">Committed</span>
