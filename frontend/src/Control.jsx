@@ -49,7 +49,7 @@ export default function Control() {
     );
   }
 
-  if (!config) {
+  if (!config || !aggregate) {
     return (
       <div className="wrap">
         <p className="muted">Loading…</p>
@@ -57,33 +57,80 @@ export default function Control() {
     );
   }
 
+  const predicted = [...config.items].sort(
+    (a, b) => (aggregate.predictionCounts?.[b] || 0) - (aggregate.predictionCounts?.[a] || 0)
+  );
+
   return (
     <div className="wrap wrap-wide">
+      <div className="phase-kicker">LECTURER CONTROL · COMMIT → ANTICIPATE → REVEAL</div>
       <h1>{config.prompt}</h1>
       <p className="muted">
-        {aggregate?.total ?? 0} student{(aggregate?.total ?? 0) === 1 ? "" : "s"} have sorted at
-        least one term
-        {config.cohort_size ? ` (of ~${config.cohort_size})` : ""}
+        {aggregate.total} student{aggregate.total === 1 ? "" : "s"} have locked a complete
+        classification{config.cohort_size ? ` (of ~${config.cohort_size})` : ""}.
       </p>
 
+      <div className="control-grid">
+        <div className="control-card">
+          <span className="control-label">Committed</span>
+          <strong>{aggregate.total}</strong>
+          <small>Complete initial classifications</small>
+        </div>
+        <div className="control-card">
+          <span className="control-label">Reconsidered</span>
+          <strong>{aggregate.reconsideredCount || 0}</strong>
+          <small>Students who have completed the post-reveal trace</small>
+        </div>
+      </div>
+
+      <div className="prediction-control">
+        <h2>Before the reveal: where students expect disagreement</h2>
+        <p className="muted">
+          These are predictions about the room, not their actual classifications. They can
+          be discussed without giving away the cohort result.
+        </p>
+        <div className="prediction-bars">
+          {predicted.map((item) => {
+            const count = aggregate.predictionCounts?.[item] || 0;
+            const pct = aggregate.total ? Math.round((count / aggregate.total) * 100) : 0;
+            return (
+              <div className="prediction-bar-row" key={item}>
+                <div className="prediction-bar-label">
+                  <span>{item}</span>
+                  <strong>{count}</strong>
+                </div>
+                <div className="prediction-bar-track">
+                  <div className="prediction-bar-fill" style={{ width: `${pct}%` }} />
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
       <div className="controls">
-        <button onClick={reveal}>Reveal now</button>
+        <button onClick={reveal} disabled={aggregate.revealed}>
+          {aggregate.revealed ? "Class view revealed" : "Reveal class divergence"}
+        </button>
         <button className="danger" onClick={clear}>
           Clear session
         </button>
       </div>
 
-      {aggregate && (
+      <div className={`lecturer-reveal${aggregate.revealed ? " lecturer-reveal-live" : ""}`}>
+        <div className="reveal-label">
+          {aggregate.revealed ? "NOW VISIBLE TO ELIGIBLE STUDENTS" : "HIDDEN FROM STUDENTS"}
+        </div>
+        <h2>Actual class classification</h2>
+        <p>
+          Most divided: <strong>{aggregate.mostDivisive.join(" · ") || "not enough responses yet"}</strong>
+        </p>
         <CategoryBoxes
           items={aggregate.items}
           categories={aggregate.categories}
           counts={aggregate.counts}
         />
-      )}
-
-      <p className="muted small">
-        {aggregate?.revealed ? "Visible to students." : "Not yet visible to students."}
-      </p>
+      </div>
     </div>
   );
 }

@@ -1,0 +1,252 @@
+
+.phase-kicker {
+  display: inline-block;
+  margin-bottom: 14px;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.09em;
+  color: var(--gold);
+}
+
+.wrap h2 {
+  margin: 28px 0 10px;
+  color: var(--navy);
+  font-size: 1.12rem;
+}
+
+.sort-bucket-locked {
+  cursor: default;
+  opacity: 0.92;
+}
+
+.action-panel,
+.locked-panel,
+.waiting-panel,
+.reconsider-panel,
+.completion-panel,
+.reveal-panel,
+.prediction-control,
+.lecturer-reveal {
+  margin-top: 24px;
+  padding: 18px;
+  border-radius: 14px;
+  background: white;
+  border: 1px solid #dbe2e8;
+}
+
+.action-panel {
+  display: flex;
+  gap: 16px;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.action-panel p,
+.locked-panel p,
+.waiting-panel p,
+.reconsider-panel p,
+.completion-panel p,
+.reveal-panel p {
+  margin: 6px 0 0;
+  line-height: 1.45;
+}
+
+.primary-action {
+  margin-top: 18px;
+  padding: 11px 18px;
+  border-radius: 9px;
+  border: none;
+  background: var(--navy);
+  color: white;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.primary-action:hover:not(:disabled) {
+  background: var(--blue);
+}
+
+.primary-action:disabled,
+.controls button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.locked-panel {
+  border-left: 5px solid var(--blue);
+}
+
+.waiting-panel {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  border-left: 5px solid var(--gold);
+}
+
+.waiting-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  margin-top: 5px;
+  background: var(--gold);
+  flex: 0 0 auto;
+}
+
+.prediction-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 10px;
+  margin: 16px 0;
+}
+
+.prediction-card {
+  text-align: left;
+  padding: 14px;
+  min-height: 70px;
+  border: 1.5px solid #cfd8e2;
+  border-radius: 11px;
+  background: white;
+  color: var(--text);
+  font-weight: 650;
+  cursor: pointer;
+}
+
+.prediction-card:hover {
+  border-color: var(--blue);
+  background: #f3f8fd;
+}
+
+.prediction-card-selected {
+  border-color: var(--navy);
+  background: #eaf2fb;
+  box-shadow: inset 0 0 0 1px var(--navy);
+}
+
+.locked-summary,
+.trace-preview {
+  margin-top: 20px;
+  border-top: 1px solid #dbe2e8;
+}
+
+.summary-row,
+.trace-change {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 10px 0;
+  border-bottom: 1px solid #edf1f4;
+  font-size: 0.9rem;
+}
+
+.summary-row strong,
+.trace-change strong {
+  text-align: right;
+  color: var(--navy);
+}
+
+.reveal-panel {
+  background: #fffaf0;
+  border-color: #e5c88a;
+}
+
+.reveal-label {
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  color: var(--gold);
+}
+
+.reveal-hit {
+  font-weight: 700;
+  color: var(--navy);
+}
+
+.reconsider-panel {
+  margin-top: 30px;
+  border-left: 5px solid var(--gold);
+}
+
+.completion-panel {
+  border-left: 5px solid var(--navy);
+}
+
+.control-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin: 20px 0;
+}
+
+.control-card {
+  background: white;
+  border: 1px solid #dbe2e8;
+  border-radius: 12px;
+  padding: 16px;
+}
+
+.control-card strong {
+  display: block;
+  margin: 5px 0;
+  color: var(--navy);
+  font-size: 2rem;
+}
+
+.control-card small {
+  color: var(--muted);
+}
+
+.control-label {
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: var(--gold);
+}
+
+.prediction-bars {
+  display: grid;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.prediction-bar-label {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 4px;
+  font-size: 0.84rem;
+}
+
+.prediction-bar-track {
+  height: 8px;
+  overflow: hidden;
+  border-radius: 99px;
+  background: #edf1f4;
+}
+
+.prediction-bar-fill {
+  height: 100%;
+  border-radius: 99px;
+  background: var(--blue);
+}
+
+.lecturer-reveal {
+  opacity: 0.78;
+}
+
+.lecturer-reveal-live {
+  opacity: 1;
+  border-color: #caa558;
+}
+
+@media (max-width: 620px) {
+  .action-panel,
+  .summary-row,
+  .trace-change {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .control-grid {
+    grid-template-columns: 1fr;
+  }
+}

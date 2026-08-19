@@ -4,6 +4,7 @@ import { HashRouter, Routes, Route } from "react-router-dom";
 import Respond from "./Respond.jsx";
 import Control from "./Control.jsx";
 import "./styles.css";
+import "./flow.css";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
