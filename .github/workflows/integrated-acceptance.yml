@@ -1,0 +1,130 @@
+name: Integrated Stage 3 acceptance
+
+on:
+  push:
+    branches:
+      - stage3-candc-engine-build
+    paths:
+      - "backend/**"
+      - "frontend/**"
+      - ".github/workflows/integrated-acceptance.yml"
+  pull_request:
+    paths:
+      - "backend/**"
+      - "frontend/**"
+      - ".github/workflows/integrated-acceptance.yml"
+
+jobs:
+  candc-stage3-e2e:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:18
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: b1141_categorise_compare_e2e
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d b1141_categorise_compare_e2e"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    env:
+      TEST_DATABASE_URL: postgresql://postgres:postgres@127.0.0.1:5432/b1141_categorise_compare_e2e
+      E2E_LECTURER_KEY: stage3-e2e-facilitator-key
+      E2E_API_BASE: http://127.0.0.1:4000
+      E2E_BASE_URL: http://127.0.0.1:4173
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install backend dependencies
+        working-directory: backend
+        run: npm install
+
+      - name: Install frontend dependencies
+        working-directory: frontend
+        run: npm install
+
+      - name: Audit production dependencies
+        working-directory: frontend
+        run: npm audit --omit=dev --audit-level=high
+
+      - name: Install Chromium for Playwright
+        working-directory: frontend
+        run: npx playwright install --with-deps chromium
+
+      - name: Build migrated acceptance database
+        working-directory: backend
+        run: |
+          psql "$TEST_DATABASE_URL" -v ON_ERROR_STOP=1 -f schema.sql
+          psql "$TEST_DATABASE_URL" -v ON_ERROR_STOP=1 -f migrations/001_stage3_candc_architecture.sql
+          psql "$TEST_DATABASE_URL" -v ON_ERROR_STOP=1 -f test/stage3-acceptance-seed.sql
+
+      - name: Start Stage 3 backend
+        run: |
+          cd backend
+          DATABASE_URL="$TEST_DATABASE_URL" \
+          ENABLE_STAGE3_CANDC=true \
+          CANDC_LECTURER_KEY="$E2E_LECTURER_KEY" \
+          ALLOWED_ORIGINS="$E2E_BASE_URL" \
+          PORT=4000 \
+          npm run start:stage3 > /tmp/candc-backend.log 2>&1 &
+          echo $! > /tmp/candc-backend.pid
+          for i in $(seq 1 40); do
+            if curl -fsS "$E2E_API_BASE/api/health" >/tmp/candc-health.json; then
+              cat /tmp/candc-health.json
+              exit 0
+            fi
+            sleep 1
+          done
+          cat /tmp/candc-backend.log
+          exit 1
+
+      - name: Build production frontend against acceptance backend
+        working-directory: frontend
+        env:
+          VITE_API_BASE: http://127.0.0.1:4000
+        run: npm run build
+
+      - name: Start production-built frontend
+        run: |
+          cd frontend
+          npm run preview -- --host 127.0.0.1 --port 4173 > /tmp/candc-frontend.log 2>&1 &
+          echo $! > /tmp/candc-frontend.pid
+          for i in $(seq 1 40); do
+            if curl -fsS "$E2E_BASE_URL" >/dev/null; then
+              exit 0
+            fi
+            sleep 1
+          done
+          cat /tmp/candc-frontend.log
+          exit 1
+
+      - name: Run multi-tag and exclusive three-surface browser acceptance
+        working-directory: frontend
+        run: npm run test:e2e
+
+      - name: Assert participant tokens are stored only as hashes
+        working-directory: backend
+        run: |
+          test "$(psql "$TEST_DATABASE_URL" -At -c "SELECT bool_and(length(participant_token_hash)=64) FROM response_traces;")" = "t"
+
+      - name: Show service logs on failure
+        if: failure()
+        run: |
+          echo "--- backend ---"
+          cat /tmp/candc-backend.log || true
+          echo "--- frontend ---"
+          cat /tmp/candc-frontend.log || true
+
+      - name: Stop acceptance services
+        if: always()
+        run: |
+          test ! -f /tmp/candc-frontend.pid || kill "$(cat /tmp/candc-frontend.pid)" || true
+          test ! -f /tmp/candc-backend.pid || kill "$(cat /tmp/candc-backend.pid)" || true

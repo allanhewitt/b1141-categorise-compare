@@ -1,0 +1,86 @@
+name: Backend checks
+
+on:
+  push:
+    branches:
+      - stage3-candc-engine-build
+    paths:
+      - "backend/**"
+      - ".github/workflows/backend-checks.yml"
+  pull_request:
+    paths:
+      - "backend/**"
+      - ".github/workflows/backend-checks.yml"
+
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:18
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: b1141_categorise_compare_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d b1141_categorise_compare_test"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    env:
+      TEST_DATABASE_URL: postgresql://postgres:postgres@127.0.0.1:5432/b1141_categorise_compare_test
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install backend dependencies
+        working-directory: backend
+        run: npm install
+
+      - name: Check Stage 3 JavaScript syntax
+        working-directory: backend
+        run: |
+          node --check lib/candc.js
+          node --check stage3-candc.js
+          node --check server-stage3.js
+          node --check test/candc.test.js
+          node --check test/candc-postgres.test.js
+
+      - name: Run pure domain tests
+        working-directory: backend
+        run: node --test test/candc.test.js
+
+      - name: Validate migration manifest hashes
+        run: |
+          python3 - <<'PY'
+          import hashlib, json, pathlib, sys
+          manifest = json.loads(pathlib.Path('backend/migrations/manifest.json').read_text())
+          for migration in manifest['migrations']:
+              data = pathlib.Path(migration['path']).read_bytes()
+              header = f"blob {len(data)}\0".encode()
+              actual = hashlib.sha1(header + data).hexdigest()
+              expected = migration['git_blob_sha']
+              print(migration['id'], actual)
+              if actual != expected:
+                  print(f"hash mismatch: expected {expected}", file=sys.stderr)
+                  sys.exit(1)
+          PY
+
+      - name: Build fresh migrated test database
+        run: |
+          psql "$TEST_DATABASE_URL" -v ON_ERROR_STOP=1 -f backend/schema.sql
+          psql "$TEST_DATABASE_URL" -v ON_ERROR_STOP=1 -f backend/migrations/001_stage3_candc_architecture.sql
+          test "$(psql "$TEST_DATABASE_URL" -At -c "SELECT (to_regclass('public.activity_sessions') IS NOT NULL AND to_regclass('public.response_traces') IS NOT NULL AND EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='activities' AND column_name='config') AND EXISTS (SELECT 1 FROM pg_indexes WHERE tablename='activity_sessions' AND indexname='uq_candc_one_open_session_per_activity'));")" = "t"
+
+      - name: Run PostgreSQL-backed lifecycle tests
+        working-directory: backend
+        run: node --test test/candc-postgres.test.js
+
+      - name: Audit production backend dependencies
+        working-directory: backend
+        run: npm audit --omit=dev
