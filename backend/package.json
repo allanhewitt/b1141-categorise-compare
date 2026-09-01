@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "start": "node server.js",
+    "start:stage3": "node server-stage3.js",
     "dev": "node --watch server.js",
     "test": "node --test test/*.test.js"
   },
