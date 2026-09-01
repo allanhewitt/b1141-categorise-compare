@@ -81,11 +81,6 @@ export default function CandCStudent() {
       setSession((prev) => ({ ...prev, ...state }));
       setTrace(mine);
       setAggregate(group);
-      if (state.revealed && mine.committed && !mine.completed) {
-        const g = await candcApi.guidance(session.id, token);
-        setGuidance(g);
-        if (!revision && g.original) setRevision(g.original);
-      }
     } catch (e) {
       setError(e.message);
     }
@@ -152,6 +147,16 @@ export default function CandCStudent() {
     finally { setBusy(false); }
   }
 
+  async function openGuidance() {
+    setBusy(true); setError("");
+    try {
+      const g = await candcApi.guidance(session.id, token);
+      setGuidance(g);
+      setRevision(g.original);
+    } catch (e) { setError(e.message); }
+    finally { setBusy(false); }
+  }
+
   async function finish() {
     if (!resolutionState) return;
     setBusy(true); setError("");
@@ -208,7 +213,8 @@ export default function CandCStudent() {
       <header className="candc-hero"><div><div className="candc-eyebrow">How did the group respond?</div><h1>Some cases were easier to place than others.</h1></div><p>Look for where people read the same case differently—not simply which label was most common.</p></header>
       <section className="candc-results-grid">{config.items.map((item) => <article className={`candc-result-card ${item.id === diagnosticId ? "focus" : ""}`} key={item.id}><h3>{item.content}</h3><ResultBars config={config} itemId={item.id} aggregate={aggregate}/></article>)}</section>
       <div className="candc-focus-callout"><strong>One case produced the widest spread of readings.</strong><span>{diagnosticItem?.content}</span></div>
-      <button className="candc-primary candc-right" onClick={refresh}>Look at it again</button>
+      {error && <p className="candc-error">{error}</p>}
+      <button className="candc-primary candc-right" disabled={busy} onClick={openGuidance}>Look at it again</button>
     </main></div>;
   }
 
