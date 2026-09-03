@@ -1,3 +1,5 @@
+import { resolveCandCPublicId } from "./public-aliases.js";
+
 export const API_BASE = import.meta.env.VITE_API_BASE || "http://localhost:4000";
 const ROOT = `${API_BASE}/api/candc`;
 
@@ -18,11 +20,12 @@ const json = (value) => ({
 });
 
 const lecturer = (key) => ({ "X-GEDL-Lecturer-Key": key });
+const activityId = (id) => resolveCandCPublicId(id);
 
 export const candcApi = {
-  activity: (id) => request(`/activities/${encodeURIComponent(id)}`),
-  sessionForActivity: (id) => request(`/activities/${encodeURIComponent(id)}/session`),
-  openSession: (id, key) => request(`/activities/${encodeURIComponent(id)}/sessions`, { method: "POST", headers: lecturer(key) }),
+  activity: (id) => request(`/activities/${encodeURIComponent(activityId(id))}`),
+  sessionForActivity: (id) => request(`/activities/${encodeURIComponent(activityId(id))}/session`),
+  openSession: (id, key) => request(`/activities/${encodeURIComponent(activityId(id))}/sessions`, { method: "POST", headers: lecturer(key) }),
   sessionState: (sessionId) => request(`/sessions/${sessionId}/state`),
   me: (sessionId, token) => request(`/sessions/${sessionId}/me?token=${encodeURIComponent(token)}`),
   saveItem: (sessionId, token, itemId, response) => request(`/sessions/${sessionId}/response`, { method: "PUT", ...json({ token, item_id: itemId, ...response }) }),
