@@ -1,5 +1,5 @@
 export const CANDC_PUBLIC_ALIASES = Object.freeze({
-  cc01: "b1141-w1-language-and-assumptions",
+  cc01: "b1141-w1-language-and-assumptions-candc",
   cc02: "b1141-w2-us-them",
   cc03: "b1141-w2-does-this-change-the-system",
   cc04: "b1141-w3-political-or-non-political-candc",
