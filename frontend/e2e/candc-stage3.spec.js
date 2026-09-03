@@ -42,7 +42,8 @@ test("W1-style multi-tag journey preserves neutral state, hidden distribution an
   const activityId = "b1141-w1-language-and-assumptions";
   const session = await openSession(request, activityId);
 
-  await page.goto(`/#/stage3/respond/${activityId}`);
+  await page.goto(`/cc01`);
+  await expect(page).toHaveURL(/\/cc01$/);
   await expect(page.getByRole("heading", { name: "What, if anything, might this wording assume?" })).toBeVisible();
   await assertMechanismInvisible(page);
   await expect(page.locator("body")).not.toContainText(/predict/i);
