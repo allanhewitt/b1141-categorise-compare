@@ -5,7 +5,7 @@ INSERT INTO activities (
   id, module, week, activity, sequence, prompt, items, categories, exclusive,
   reveal_mode, reveal_threshold, cohort_size, active, model, title, config, schema_version
 ) VALUES (
-  'b1141-w1-language-and-assumptions', 'B1141', 1, 'language-and-assumptions', 2,
+  'b1141-w1-language-and-assumptions-candc', 'B1141', 1, 'language-and-assumptions', 2,
   'Acceptance fixture', '[]'::jsonb, '[]'::jsonb, false, 'manual', NULL, NULL, true,
   'categorise_compare', 'Language and assumptions',
   $cfg$
