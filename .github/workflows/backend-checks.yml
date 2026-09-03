@@ -83,4 +83,4 @@ jobs:
 
       - name: Audit production backend dependencies
         working-directory: backend
-        run: npm audit --omit=dev
+        run: npm audit --omit=dev --audit-level=high
