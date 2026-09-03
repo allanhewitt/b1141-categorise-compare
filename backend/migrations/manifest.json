@@ -29,6 +29,15 @@
       "description": "Configure inactive canonical B1141 C&C instances CC04-CC07 with approved Stage 4 content",
       "verify_sql": "SELECT ((SELECT COUNT(*) FROM activities WHERE model='categorise_compare') = 7 AND (SELECT COUNT(*) FROM activities WHERE model='categorise_compare' AND active) = 0 AND COUNT(*) = 4 AND COUNT(*) FILTER (WHERE model <> 'categorise_compare' OR config IS NULL OR schema_version <> 1) = 0) FROM activities WHERE id IN ('b1141-w3-political-or-non-political-candc','b1141-w4-design-an-inclusive-sport','b1141-w8-four-technological-interventions','b1141-w9-the-comparison');",
       "verify_expected": "t"
+    },
+    {
+      "id": "004",
+      "filename": "004_candc_stage4_content_revision.sql",
+      "path": "backend/migrations/004_candc_stage4_content_revision.sql",
+      "git_blob_sha": "a9eec94b096e35c5410dd9ddd8d1c10a69515547",
+      "description": "Apply approved post-configuration learner-facing wording revisions while preserving Stage 3 mechanics and inactive status",
+      "verify_sql": "SELECT ((SELECT COUNT(*) FROM activities WHERE model='categorise_compare') = 7 AND (SELECT COUNT(*) FROM activities WHERE model='categorise_compare' AND active) = 0 AND (SELECT config #>> '{items,1,optional_context,target_or_subject}' FROM activities WHERE id='b1141-w1-language-and-assumptions-candc') = 'a white winger' AND (SELECT config #>> '{categories,2,label}' FROM activities WHERE id='b1141-w2-us-them') = 'Both' AND (SELECT config #>> '{categories,2,label}' FROM activities WHERE id='b1141-w3-political-or-non-political-candc') = 'Contested' AND (SELECT config #>> '{categories,1,label}' FROM activities WHERE id='b1141-w4-design-an-inclusive-sport') = 'Familiar arrangement' AND (SELECT title FROM activities WHERE id='b1141-w8-four-technological-interventions') = 'What Counts as an Advantage?' AND (SELECT config #>> '{items,5,content}' FROM activities WHERE id='b1141-w9-the-comparison') = 'One tournament was extraordinarily geographically concentrated and the other extraordinarily geographically dispersed.');",
+      "verify_expected": "t"
     }
   ],
   "postflight": [
