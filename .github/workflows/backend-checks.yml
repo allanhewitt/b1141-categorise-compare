@@ -74,8 +74,18 @@ jobs:
       - name: Build fresh migrated test database
         run: |
           psql "$TEST_DATABASE_URL" -v ON_ERROR_STOP=1 -f backend/schema.sql
-          psql "$TEST_DATABASE_URL" -v ON_ERROR_STOP=1 -f backend/migrations/001_stage3_candc_architecture.sql
-          test "$(psql "$TEST_DATABASE_URL" -At -c "SELECT (to_regclass('public.activity_sessions') IS NOT NULL AND to_regclass('public.response_traces') IS NOT NULL AND EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='activities' AND column_name='config') AND EXISTS (SELECT 1 FROM pg_indexes WHERE tablename='activity_sessions' AND indexname='uq_candc_one_open_session_per_activity'));")" = "t"
+          python3 - <<'PY'
+          import json, os, pathlib, subprocess, sys
+          manifest = json.loads(pathlib.Path('backend/migrations/manifest.json').read_text())
+          db = os.environ['TEST_DATABASE_URL']
+          for migration in manifest['migrations']:
+              print(f"Applying {migration['id']} {migration['filename']}")
+              subprocess.run(['psql', db, '-v', 'ON_ERROR_STOP=1', '-f', migration['path']], check=True)
+              actual = subprocess.check_output(['psql', db, '-At', '-c', migration['verify_sql']], text=True).strip()
+              if actual != migration['verify_expected']:
+                  print(f"verification failed for {migration['id']}: expected {migration['verify_expected']}, got {actual}", file=sys.stderr)
+                  sys.exit(1)
+          PY
 
       - name: Run PostgreSQL-backed lifecycle tests
         working-directory: backend
@@ -83,4 +93,4 @@ jobs:
 
       - name: Audit production backend dependencies
         working-directory: backend
-        run: npm audit --omit=dev
+        run: npm audit --omit=dev --audit-level=high
