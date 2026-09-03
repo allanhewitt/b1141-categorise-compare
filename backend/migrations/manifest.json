@@ -11,6 +11,24 @@
       "description": "Create persistent versioned Stage 3 C&C session and trace architecture while preserving legacy data",
       "verify_sql": "SELECT (to_regclass('public.activity_sessions') IS NOT NULL AND to_regclass('public.response_traces') IS NOT NULL AND EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='activities' AND column_name='config') AND EXISTS (SELECT 1 FROM pg_indexes WHERE tablename='activity_sessions' AND indexname='uq_candc_one_open_session_per_activity'));",
       "verify_expected": "t"
+    },
+    {
+      "id": "002",
+      "filename": "002_candc_stage4_b1141_instances_part1.sql",
+      "path": "backend/migrations/002_candc_stage4_b1141_instances_part1.sql",
+      "git_blob_sha": "8be2c6ebef41dce29df028d948ac697d9c270fc1",
+      "description": "Configure inactive canonical B1141 C&C instances CC01-CC03 with approved Stage 4 content",
+      "verify_sql": "SELECT (COUNT(*) = 3 AND COUNT(*) FILTER (WHERE active) = 0 AND COUNT(*) FILTER (WHERE model <> 'categorise_compare' OR config IS NULL OR schema_version <> 1) = 0) FROM activities WHERE id IN ('b1141-w1-language-and-assumptions','b1141-w2-us-them','b1141-w2-does-this-change-the-system');",
+      "verify_expected": "t"
+    },
+    {
+      "id": "003",
+      "filename": "003_candc_stage4_b1141_instances_part2.sql",
+      "path": "backend/migrations/003_candc_stage4_b1141_instances_part2.sql",
+      "git_blob_sha": "9574b69c9d6f691a8ff758d8ccc4181118def14a",
+      "description": "Configure inactive canonical B1141 C&C instances CC04-CC07 with approved Stage 4 content",
+      "verify_sql": "SELECT ((SELECT COUNT(*) FROM activities WHERE model='categorise_compare') = 7 AND (SELECT COUNT(*) FROM activities WHERE model='categorise_compare' AND active) = 0 AND COUNT(*) = 4 AND COUNT(*) FILTER (WHERE model <> 'categorise_compare' OR config IS NULL OR schema_version <> 1) = 0) FROM activities WHERE id IN ('b1141-w3-political-or-non-political-candc','b1141-w4-design-an-inclusive-sport','b1141-w8-four-technological-interventions','b1141-w9-the-comparison');",
+      "verify_expected": "t"
     }
   ],
   "postflight": [
