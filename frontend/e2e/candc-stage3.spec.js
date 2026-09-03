@@ -39,7 +39,7 @@ async function assertMechanismInvisible(page) {
 }
 
 test("W1-style multi-tag journey preserves neutral state, hidden distribution and three-surface reveal", async ({ page, request }) => {
-  const activityId = "b1141-w1-language-and-assumptions";
+  const activityId = "b1141-w1-language-and-assumptions-candc";
   const session = await openSession(request, activityId);
 
   await page.goto(`/cc01`);
