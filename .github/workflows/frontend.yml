@@ -1,0 +1,30 @@
+name: Frontend checks
+
+on:
+  push:
+    branches:
+      - stage3-candc-engine-build
+    paths:
+      - "frontend/**"
+      - ".github/workflows/frontend.yml"
+  pull_request:
+    paths:
+      - "frontend/**"
+      - ".github/workflows/frontend.yml"
+
+jobs:
+  frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - working-directory: frontend
+        run: npm install
+      - working-directory: frontend
+        run: npm test
+      - working-directory: frontend
+        run: npm run build
+      - working-directory: frontend
+        run: npm audit --omit=dev --audit-level=high
