@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "application": "b1141-categorise-compare",
+  "database": "b1141_categorise_compare",
+  "migrations": [
+    {
+      "id": "001",
+      "filename": "001_stage3_candc_architecture.sql",
+      "path": "backend/migrations/001_stage3_candc_architecture.sql",
+      "git_blob_sha": "935dee2f7af2adea83eaebbd4c2c9993699b82d3",
+      "description": "Create persistent versioned Stage 3 C&C session and trace architecture while preserving legacy data",
+      "verify_sql": "SELECT (to_regclass('public.activity_sessions') IS NOT NULL AND to_regclass('public.response_traces') IS NOT NULL AND EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='activities' AND column_name='config') AND EXISTS (SELECT 1 FROM pg_indexes WHERE tablename='activity_sessions' AND indexname='uq_candc_one_open_session_per_activity'));",
+      "verify_expected": "t"
+    }
+  ],
+  "postflight": [
+    {"name": "total_activities", "sql": "SELECT COUNT(*) FROM activities;"},
+    {"name": "canonical_candc", "sql": "SELECT COUNT(*) FROM activities WHERE model='categorise_compare';"},
+    {"name": "active_canonical_candc", "sql": "SELECT COUNT(*) FROM activities WHERE model='categorise_compare' AND active;"},
+    {"name": "legacy_unclassified", "sql": "SELECT COUNT(*) FROM activities WHERE model IS NULL;"},
+    {"name": "legacy_responses", "sql": "SELECT COUNT(*) FROM responses;"},
+    {"name": "stage3_sessions", "sql": "SELECT COUNT(*) FROM activity_sessions;"},
+    {"name": "stage3_traces", "sql": "SELECT COUNT(*) FROM response_traces;"}
+  ]
+}
