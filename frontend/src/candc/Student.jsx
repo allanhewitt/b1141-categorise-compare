@@ -55,7 +55,8 @@ function ResultBars({ config, itemId, aggregate }) {
 }
 
 export default function CandCStudent() {
-  const { id } = useParams();
+  const { id, alias } = useParams();
+  const activityId = id || alias;
   const [activity, setActivity] = useState(null);
   const [session, setSession] = useState(null);
   const [trace, setTrace] = useState(null);
@@ -66,7 +67,7 @@ export default function CandCStudent() {
   const [busy, setBusy] = useState(false);
   const [resolutionState, setResolutionState] = useState("");
   const [revision, setRevision] = useState(null);
-  const [token] = useState(() => participantToken(id));
+  const [token] = useState(() => participantToken(activityId));
 
   const config = activity?.config;
 
@@ -90,10 +91,10 @@ export default function CandCStudent() {
     let cancelled = false;
     (async () => {
       try {
-        const a = await candcApi.activity(id);
+        const a = await candcApi.activity(activityId);
         if (cancelled) return;
         setActivity(a);
-        const s = await candcApi.sessionForActivity(id);
+        const s = await candcApi.sessionForActivity(activityId);
         if (cancelled) return;
         setSession(s);
         const mine = await candcApi.me(s.id, token);
@@ -107,7 +108,7 @@ export default function CandCStudent() {
       }
     })();
     return () => { cancelled = true; };
-  }, [id, token]);
+  }, [activityId, token]);
 
   useEffect(() => {
     if (!session?.id || trace?.completed) return undefined;
