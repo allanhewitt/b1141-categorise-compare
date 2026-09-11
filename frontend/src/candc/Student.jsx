@@ -198,7 +198,7 @@ export default function CandCStudent() {
   }
 
   if (trace.completed) {
-    return <div className="candc-app" style={profileVars()}><main className="candc-finish"><div className="candc-eyebrow">Done</div><h1>You’ve completed this activity.</h1><p>The important question is not whether everyone agrees. It is what our different readings reveal about the assumptions we bring to apparently ordinary language.</p></main></div>;
+    return <div className="candc-app" style={profileVars()}><main className="candc-finish"><div className="candc-eyebrow">Done</div><h1>You’ve completed this activity.</h1><p>The important question is not whether everyone agrees. It is what the different readings reveal about how people interpret the same case.</p></main></div>;
   }
 
   if (committed && !session.revealed) {
@@ -240,7 +240,7 @@ export default function CandCStudent() {
   }
 
   if (phase === "intro") {
-    return <div className="candc-app" style={profileVars()}><main className="candc-entry-screen"><div className="candc-eyebrow">Language and Assumptions</div><h1>{activity.title}</h1><p>{config.entry.text}</p><p className="candc-entry-note">You can change your answers before you finish.</p><button className="candc-primary candc-large-action" onClick={() => setPhase("cases")}>Start</button></main></div>;
+    return <div className="candc-app" style={profileVars()}><main className="candc-entry-screen"><div className="candc-eyebrow">What do you notice?</div><h1>{activity.title}</h1><p>{config.entry.text}</p><p className="candc-entry-note">You can change your answers before you finish.</p><button className="candc-primary candc-large-action" onClick={() => setPhase("cases")}>Start</button></main></div>;
   }
 
   if (phase === "review") {
