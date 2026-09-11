@@ -42,7 +42,7 @@ async function finishInitialSet(page) {
   await page.getByRole("button", { name: "Review my choices" }).click();
   await expect(page.getByText("Review your choices")).toBeVisible();
   await page.getByRole("button", { name: "Finish sorting" }).click();
-  await expect(page.getByRole("heading", { name: "Finish and submit these choices?" })).toBeVisible();
+  await expect(page.getByText("Finish and submit these choices?", { exact: true })).toBeVisible();
   await page.getByRole("button", { name: "Submit" }).click();
 }
 
