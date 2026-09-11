@@ -46,6 +46,50 @@ function ContextBlock({ value, compact = false }) {
   </div>;
 }
 
+function ReviewContextBlock({ value }) {
+  if (!value) return null;
+  const entries = Object.entries(value).filter(([, item]) => typeof item === "string" && item.trim());
+  if (!entries.length) return null;
+  return <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginTop: 6 }}>
+    {entries.map(([key, item]) => <div key={`${key}-${item}`} style={{
+      display: "flex",
+      gap: 7,
+      alignItems: "baseline",
+      padding: "5px 9px",
+      borderRadius: 10,
+      background: "rgba(255,255,255,.055)",
+      border: "1px solid rgba(255,255,255,.09)",
+    }}>
+      <span style={{ color: "#aab5b0", fontSize: ".66rem", fontWeight: 800, letterSpacing: ".06em", textTransform: "uppercase" }}>{contextLabel(key)}</span>
+      <strong style={{ color: "#edf3f0", fontSize: ".82rem", lineHeight: 1.2 }}>{item}</strong>
+    </div>)}
+  </div>;
+}
+
+function StickyActionBar({ label, children }) {
+  return <div style={{
+    position: "fixed",
+    zIndex: 40,
+    left: "50%",
+    transform: "translateX(-50%)",
+    bottom: 12,
+    width: "min(calc(100% - 22px), 898px)",
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    gap: 12,
+    padding: "11px 12px",
+    borderRadius: 18,
+    background: "rgba(17,23,20,.94)",
+    border: "1px solid rgba(255,255,255,.12)",
+    boxShadow: "0 18px 45px rgba(0,0,0,.35)",
+    backdropFilter: "blur(14px)",
+  }}>
+    <span style={{ color: "#c8d1cd", fontSize: ".86rem" }}>{label}</span>
+    <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap", justifyContent: "flex-end" }}>{children}</div>
+  </div>;
+}
+
 function ResultBars({ config, itemId, aggregate }) {
   const labels = stateLabels(config);
   const ids = config.categories.map((category) => category.id);
@@ -209,7 +253,7 @@ export default function CandCStudent() {
     const original = guidance.original;
     const item = guidance.item || diagnosticItem;
     return <div className="candc-app" style={profileVars()}>
-      <main className="candc-shell candc-student-shell">
+      <main className="candc-shell candc-student-shell" style={{ paddingBottom: 110 }}>
         <header className="candc-student-header"><div className="candc-eyebrow">A case worth looking at again</div><h1>What might explain the different readings?</h1></header>
         <section className="candc-reflect-stack">
           <CaseCard item={item}><small className="candc-original-choice">Your original choice: {responseLabels(config, original).join(", ")}</small></CaseCard>
@@ -222,20 +266,24 @@ export default function CandCStudent() {
               return <button key={cat.id} className={selected ? "selected" : ""} style={{ "--cat": categoryColor(i, CANDC_PROFILE) }} onClick={() => setRevision(toggleCategory(config, revision, cat.id))}>{cat.label}</button>;
             })}{config.classification.explicit_none?.enabled && <button className={revision?.explicit_none ? "selected" : ""} onClick={() => setRevision(chooseExplicitNone(!revision?.explicit_none))}>{config.classification.explicit_none.label}</button>}</div>}
             {error && <p className="candc-error">{error}</p>}
-            <button className="candc-primary candc-large-action" disabled={!resolutionState || busy} onClick={finish}>Finish</button>
           </div>
         </section>
+        <StickyActionBar label={resolutionState ? "Ready to finish" : "Choose where you are now"}>
+          <button className="candc-primary candc-large-action" disabled={!resolutionState || busy} onClick={finish}>Finish</button>
+        </StickyActionBar>
       </main>
     </div>;
   }
 
   if (committed && session.revealed && aggregate?.revealed) {
-    return <div className="candc-app" style={profileVars()}><main className="candc-shell candc-student-shell">
+    return <div className="candc-app" style={profileVars()}><main className="candc-shell candc-student-shell" style={{ paddingBottom: 110 }}>
       <header className="candc-student-header"><div className="candc-eyebrow">How did the room read these cases?</div><h1>Look for where responses clustered — and where they differed.</h1></header>
       <section className="candc-results-list">{config.items.map((item, i) => <article className={`candc-result-card candc-result-card-context ${item.id === diagnosticId ? "focus" : ""}`} key={item.id}><div className="candc-case-number">Case {i + 1}</div><ContextBlock value={item.optional_context} compact/><h3>{item.content}</h3><ResultBars config={config} itemId={item.id} aggregate={aggregate}/></article>)}</section>
       {diagnosticItem && <div className="candc-focus-callout"><strong>This case produced the widest spread of responses.</strong><ContextBlock value={diagnosticItem.optional_context} compact/><span>{diagnosticItem.content}</span></div>}
       {error && <p className="candc-error">{error}</p>}
-      <button className="candc-primary candc-large-action" disabled={busy} onClick={openGuidance}>Look more closely</button>
+      <StickyActionBar label={`${config.items.length} cases compared`}>
+        <button className="candc-primary candc-large-action" disabled={busy} onClick={openGuidance}>Look more closely</button>
+      </StickyActionBar>
     </main></div>;
   }
 
@@ -244,17 +292,22 @@ export default function CandCStudent() {
   }
 
   if (phase === "review") {
-    return <div className="candc-app" style={profileVars()}><main className="candc-shell candc-student-shell">
+    return <div className="candc-app" style={profileVars()}><main className="candc-shell candc-student-shell" style={{ paddingBottom: 118 }}>
       <header className="candc-student-header"><div className="candc-eyebrow">Review your choices</div><h1>Have a look across the full set before you finish.</h1><p>You can still change anything.</p></header>
-      <section className="candc-review-list">{config.items.map((item, i) => <article className="candc-review-card" key={item.id}><div><div className="candc-case-number">Case {i + 1}</div><ContextBlock value={item.optional_context} compact/><h3>{item.content}</h3><p>{responseLabels(config, responseFor(working, item.id)).join(", ")}</p></div><button className="candc-secondary" onClick={() => { setIndex(i); setPhase("cases"); }}>Edit</button></article>)}</section>
-      {!confirming ? <button className="candc-primary candc-large-action" disabled={!completeSet(config, working) || busy} onClick={() => setConfirming(true)}>Finish sorting</button> : <div className="candc-confirm-panel"><h2>Finish and submit these choices?</h2><p>You won’t be able to change them until the group comparison is shown.</p><div><button className="candc-secondary" onClick={() => setConfirming(false)}>Go back</button><button className="candc-primary" disabled={busy} onClick={commit}>Submit</button></div></div>}
+      <section className="candc-review-list">{config.items.map((item, i) => <article className="candc-review-card" style={{ padding: "12px 14px", gap: 12 }} key={item.id}><div><div className="candc-case-number">Case {i + 1}</div><ReviewContextBlock value={item.optional_context}/><h3>{item.content}</h3><p>{responseLabels(config, responseFor(working, item.id)).join(", ")}</p></div><button className="candc-secondary" onClick={() => { setIndex(i); setPhase("cases"); }}>Edit</button></article>)}</section>
       {error && <p className="candc-error">{error}</p>}
+      <StickyActionBar label={confirming ? "Submit these choices? They stay locked until the group comparison." : `${done} of ${config.items.length} reviewed`}>
+        {!confirming ? <button className="candc-primary candc-large-action" disabled={!completeSet(config, working) || busy} onClick={() => setConfirming(true)}>Finish sorting</button> : <>
+          <button className="candc-secondary" onClick={() => setConfirming(false)}>Go back</button>
+          <button className="candc-primary" disabled={busy} onClick={commit}>Submit</button>
+        </>}
+      </StickyActionBar>
     </main></div>;
   }
 
   return <div className="candc-app" style={profileVars()}><main className="candc-shell candc-student-shell">
     <header className="candc-case-header"><div><div className="candc-eyebrow">Case {index + 1} of {config.items.length}</div><div className="candc-progress"><i style={{ width: `${((index + 1) / config.items.length) * 100}%` }}/></div></div></header>
-    <CaseCard item={currentItem} number={index + 1}>
+    <CaseCard item={currentItem}>
       <h2>{config.classification.prompt || "How would you classify this case?"}</h2>
       <div className="candc-tag-grid candc-tag-grid-single">{config.categories.map((category, i) => {
         const selected = currentResponse.category_ids.includes(category.id);
