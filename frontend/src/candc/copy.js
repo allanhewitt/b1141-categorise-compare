@@ -1,3 +1,4 @@
+// Pedagogical framing belongs in activity config; interface mechanics remain in the engine.
 export function copyText(config, path, fallback = "") {
   const keys = Array.isArray(path) ? path : String(path).split(".");
   let value = config?.copy;
