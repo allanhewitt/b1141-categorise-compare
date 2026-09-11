@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
 import { candcApi } from "./api.js";
+import { copyText } from "./copy.js";
 import { CANDC_PROFILE, categoryColor, profileVars } from "./profile.js";
 import { percent, stateLabels } from "./model.js";
 
@@ -74,7 +75,7 @@ export default function CandCPresentation() {
   const diagnostic = config.items.find((item) => item.id === aggregate.diagnostic_item_id);
 
   if (!session.revealed || !aggregate.revealed) {
-    return <div className="candc-app candc-presentation" style={profileVars()}><main className="candc-projector-collect"><div className="candc-eyebrow">{activity.title}</div><h1>Complete the activity on your own device.</h1><div className="candc-projector-count">{aggregate.response_count || 0}</div><p>responses submitted</p></main></div>;
+    return <div className="candc-app candc-presentation" style={profileVars()}><main className="candc-projector-collect"><div className="candc-eyebrow">{activity.title}</div><h1>{copyText(config, "presentation.collecting_heading", "Complete the activity on your own device.")}</h1><div className="candc-projector-count">{aggregate.response_count || 0}</div><p>{copyText(config, "presentation.submitted_label", "responses submitted")}</p></main></div>;
   }
 
   const moveFocus = (delta) => {
@@ -84,9 +85,9 @@ export default function CandCPresentation() {
   };
 
   return <div className="candc-app candc-presentation" style={profileVars()}><main className="candc-projector-results candc-gallery-view">
-    <div className="candc-eyebrow">How did the group classify these cases?</div>
-    <h1>Look for where responses clustered — and where they differed.</h1>
-    <p className="candc-gallery-instruction">Select a case to look more closely at the response pattern.</p>
+    <div className="candc-eyebrow">{copyText(config, "comparison.presentation_eyebrow", "How did the group classify these cases?")}</div>
+    <h1>{copyText(config, "comparison.heading", "Look for where responses clustered — and where they differed.")}</h1>
+    <p className="candc-gallery-instruction">{copyText(config, "presentation.gallery_instruction", "Select a case to look more closely at the response pattern.")}</p>
     <div className="candc-projector-grid candc-gallery-grid">{config.items.map((item, i) => <button key={item.id} type="button" className={`candc-gallery-card ${item.id === aggregate.diagnostic_item_id ? "diagnostic" : ""}`} onClick={() => setFocusedId(item.id)}>
       <div className="candc-case-number">Case {i + 1}</div>
       <ContextBlock value={item.optional_context} compact/>
@@ -94,14 +95,14 @@ export default function CandCPresentation() {
       <TopResponses config={config} itemId={item.id} aggregate={aggregate}/>
       <span className="candc-card-cta">View case</span>
     </button>)}</div>
-    {diagnostic && <div className="candc-projector-note">The highlighted card produced the widest spread of responses.</div>}
+    {diagnostic && <div className="candc-projector-note">{copyText(config, "comparison.presentation_diagnostic_note", "The highlighted card produced the widest spread of responses.")}</div>}
   </main>
   {focusedItem && <div className="candc-focus-overlay" role="dialog" aria-modal="true" aria-label={`Case ${focusedIndex + 1}`} onClick={() => setFocusedId(null)}>
     <div className="candc-focus-panel" onClick={(event) => event.stopPropagation()}>
-      <div className="candc-focus-toolbar"><span>Case {focusedIndex + 1} of {config.items.length}{focusedItem.id === aggregate.diagnostic_item_id ? " · widest response spread" : ""}</span><button onClick={() => setFocusedId(null)} aria-label="Close case">×</button></div>
+      <div className="candc-focus-toolbar"><span>Case {focusedIndex + 1} of {config.items.length}{focusedItem.id === aggregate.diagnostic_item_id ? ` · ${copyText(config, "presentation.diagnostic_marker", "widest response spread")}` : ""}</span><button onClick={() => setFocusedId(null)} aria-label="Close case">×</button></div>
       <section className="candc-focus-content">
         <article className="candc-focus-case"><ContextBlock value={focusedItem.optional_context}/><blockquote>{focusedItem.content}</blockquote></article>
-        <div className="candc-focus-data"><h3>Room response</h3><Bars config={config} itemId={focusedItem.id} aggregate={aggregate} large/></div>
+        <div className="candc-focus-data"><h3>{copyText(config, "presentation.room_response_heading", "Room response")}</h3><Bars config={config} itemId={focusedItem.id} aggregate={aggregate} large/></div>
       </section>
       <div className="candc-focus-nav"><button className="candc-secondary" onClick={() => moveFocus(-1)}>← Previous</button><button className="candc-secondary" onClick={() => setFocusedId(null)}>Back to overview</button><button className="candc-primary" onClick={() => moveFocus(1)}>Next →</button></div>
     </div>
