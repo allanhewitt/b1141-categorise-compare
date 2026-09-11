@@ -87,7 +87,7 @@ export default function CandCLecturer() {
         {!session?.revealed || !aggregate?.revealed ? <div className="candc-hidden-state"><div className="candc-orbit"/><h2>Response pattern hidden</h2><p>You can see how many students have submitted without seeing how they classified the cases.</p></div> : <>
           <div className="candc-control-title"><div><h2>Group responses</h2><p>Each card now includes the context needed to interpret the statement.</p></div></div>
           <div className="candc-results-grid candc-lecturer-results">{config.items.map((item, i) => <article className={`candc-result-card candc-result-card-context ${item.id === aggregate.diagnostic_item_id ? "focus" : ""}`} key={item.id}><div className="candc-case-number">Case {i + 1}</div><ContextBlock value={item.optional_context}/><h3>{item.content}</h3><Bars config={config} itemId={item.id} aggregate={aggregate}/></article>)}</div>
-          {diagnostic && <div className="candc-focus-callout candc-discussion-callout"><strong>Suggested discussion case</strong><ContextBlock value={diagnostic.optional_context}/><span>{diagnostic.content}</span><small>{copyText(config, "comparison.diagnostic_note", "This case produced the widest spread of responses.")} in the frozen group response.</small></div>}
+          {diagnostic && <div className="candc-focus-callout candc-discussion-callout"><strong>Suggested discussion case</strong><ContextBlock value={diagnostic.optional_context}/><span>{diagnostic.content}</span><small>{copyText(config, "comparison.lecturer_diagnostic_note", "This case produced the widest spread of responses in the frozen group response.")}</small></div>}
         </>}
       </div>
     </section>
