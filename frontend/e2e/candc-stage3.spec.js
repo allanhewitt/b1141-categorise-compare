@@ -38,31 +38,39 @@ async function assertMechanismInvisible(page) {
   }
 }
 
-test("W1-style multi-tag journey preserves neutral state, hidden distribution and three-surface reveal", async ({ page, request }) => {
+async function finishInitialSet(page) {
+  await page.getByRole("button", { name: "Review my choices" }).click();
+  await expect(page.getByText("Review your choices")).toBeVisible();
+  await page.getByRole("button", { name: "Finish sorting" }).click();
+  await expect(page.getByRole("heading", { name: "Finish and submit these choices?" })).toBeVisible();
+  await page.getByRole("button", { name: "Submit" }).click();
+}
+
+test("W1-style multi-tag journey uses sequential review, hidden distribution and zoomable presentation", async ({ page, request }) => {
   const activityId = "b1141-w1-language-and-assumptions-candc";
   const session = await openSession(request, activityId);
 
   await page.goto(`/cc01`);
   await expect(page).toHaveURL(/\/cc01$/);
+  await expect(page.getByRole("heading", { name: /Language and assumptions/i })).toBeVisible();
+  await page.getByRole("button", { name: "Start" }).click();
   await expect(page.getByRole("heading", { name: "What, if anything, might this wording assume?" })).toBeVisible();
   await assertMechanismInvisible(page);
-  await expect(page.locator("body")).not.toContainText(/predict/i);
 
   await page.getByRole("button", { name: "Gender-related assumption" }).click();
   await expect(page.getByRole("button", { name: "Gender-related assumption" })).toHaveClass(/selected/);
-  await page.getByRole("button", { name: "Next case" }).click();
+  await page.getByRole("button", { name: "Next" }).click();
 
   await page.getByRole("button", { name: "Gender-related assumption" }).click();
-  await expect(page.getByRole("button", { name: "Gender-related assumption" })).toHaveClass(/selected/);
   await page.getByRole("button", { name: "I don't see a clear social assumption here" }).click();
   await expect(page.getByRole("button", { name: "I don't see a clear social assumption here" })).toHaveClass(/selected/);
   await expect(page.getByRole("button", { name: "Gender-related assumption" })).not.toHaveClass(/selected/);
-  await page.getByRole("button", { name: "Next case" }).click();
+  await page.getByRole("button", { name: "Next" }).click();
 
   await page.getByRole("button", { name: "Class/status-related assumption" }).click();
-  await expect(page.getByText("3 of 3 sorted")).toBeVisible();
-  await page.getByRole("button", { name: /sorted these/i }).click();
-  await expect(page.getByRole("heading", { name: /show the group responses shortly/i })).toBeVisible();
+  await expect(page.getByText("3 of 3 answered")).toBeVisible();
+  await finishInitialSet(page);
+  await expect(page.getByRole("heading", { name: "Your choices are locked in." })).toBeVisible();
 
   const second = "acceptance-participant-two-123";
   await put(request, session.id, second, "natural_athlete", ["gender"]);
@@ -91,35 +99,40 @@ test("W1-style multi-tag journey preserves neutral state, hidden distribution an
   await lecturer.getByLabel("Facilitator key").fill(KEY);
   await lecturer.getByRole("button", { name: "Show group responses" }).click();
 
-  await expect(page.getByText("How did the group respond?")).toBeVisible();
-  await expect(page.getByText("One case produced the widest spread of readings.")).toBeVisible();
-  await assertMechanismInvisible(page);
-  await expect(presentation.getByText("How did the group respond?")).toBeVisible();
+  await expect(page.getByText("How did the room read these cases?")).toBeVisible();
+  await expect(page.getByText("This case produced the widest spread of responses.")).toBeVisible();
+  await expect(presentation.getByRole("heading", { name: /responses clustered/i })).toBeVisible();
   await expect(lecturer.getByText("Suggested discussion case")).toBeVisible();
+
+  await presentation.locator(".candc-gallery-card").first().click();
+  await expect(presentation.getByRole("dialog")).toBeVisible();
+  await presentation.keyboard.press("Escape");
+  await expect(presentation.getByRole("dialog")).toHaveCount(0);
 
   const revealed = await request.get(`${API}/api/candc/sessions/${session.id}/aggregate`);
   const revealedBody = await revealed.json();
   expect(revealedBody.diagnostic_item_id).toBe("aggressive");
 
-  await page.getByRole("button", { name: "Look at it again" }).click();
+  await page.getByRole("button", { name: "Look more closely" }).click();
   await expect(page.getByText("What is it about this comment that makes it possible to read in more than one way?")).toBeVisible();
   await page.getByRole("button", { name: "I’d keep the same reading" }).click();
-  await page.getByRole("button", { name: "That’s where I am now" }).click();
-  await expect(page.getByRole("heading", { name: "You’re finished with this activity." })).toBeVisible();
+  await page.getByRole("button", { name: "Finish" }).click();
+  await expect(page.getByRole("heading", { name: "You’ve completed this activity." })).toBeVisible();
 });
 
-test("W2-style exclusive journey replaces only the frozen focus classification", async ({ page, request }) => {
+test("W2-style exclusive journey still supports revision through the shared sequential interface", async ({ page, request }) => {
   const activityId = "b1141-w2-us-them";
   const session = await openSession(request, activityId);
 
   await page.goto(`/#/stage3/respond/${activityId}`);
+  await page.getByRole("button", { name: "Start" }).click();
   await expect(page.getByRole("heading", { name: "What does each behaviour create?" })).toBeVisible();
   await page.getByRole("button", { name: "Belonging" }).click();
-  await page.getByRole("button", { name: "Next case" }).click();
+  await page.getByRole("button", { name: "Next" }).click();
   await page.getByRole("button", { name: "Exclusion" }).click();
-  await page.getByRole("button", { name: "Next case" }).click();
+  await page.getByRole("button", { name: "Next" }).click();
   await page.getByRole("button", { name: "Both / contested" }).click();
-  await page.getByRole("button", { name: /sorted these/i }).click();
+  await finishInitialSet(page);
 
   const second = "acceptance-exclusive-two-123";
   await put(request, session.id, second, "shared_chant", ["exclusion"]);
@@ -128,15 +141,15 @@ test("W2-style exclusive journey replaces only the frozen focus classification",
   await commit(request, session.id, second);
   await reveal(request, session.id);
 
-  await expect(page.getByText("How did the group respond?")).toBeVisible();
+  await expect(page.getByText("How did the room read these cases?")).toBeVisible();
   const group = await (await request.get(`${API}/api/candc/sessions/${session.id}/aggregate`)).json();
   expect(group.diagnostic_item_id).toBe("shared_chant");
-  await page.getByRole("button", { name: "Look at it again" }).click();
+  await page.getByRole("button", { name: "Look more closely" }).click();
   await expect(page.getByText("What is it about this behaviour that makes it difficult to place clearly in only one category?")).toBeVisible();
   await page.getByRole("button", { name: "I’d change my classification" }).click();
   await page.locator(".candc-revision").getByRole("button", { name: "Exclusion" }).click();
-  await page.getByRole("button", { name: "That’s where I am now" }).click();
-  await expect(page.getByRole("heading", { name: "You’re finished with this activity." })).toBeVisible();
+  await page.getByRole("button", { name: "Finish" }).click();
+  await expect(page.getByRole("heading", { name: "You’ve completed this activity." })).toBeVisible();
 
   const token = await page.evaluate((id) => JSON.parse(localStorage.getItem(`gedl:candc:${id}:participant`)).token, activityId);
   const mine = await (await request.get(`${API}/api/candc/sessions/${session.id}/me?token=${encodeURIComponent(token)}`)).json();

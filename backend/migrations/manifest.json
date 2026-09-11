@@ -38,6 +38,15 @@
       "description": "Apply approved post-configuration learner-facing wording revisions while preserving Stage 3 mechanics and inactive status",
       "verify_sql": "SELECT ((SELECT COUNT(*) FROM activities WHERE model='categorise_compare') = 7 AND (SELECT COUNT(*) FROM activities WHERE model='categorise_compare' AND active) = 0 AND (SELECT config #>> '{items,1,optional_context,target_or_subject}' FROM activities WHERE id='b1141-w1-language-and-assumptions-candc') = 'a white winger' AND (SELECT config #>> '{categories,2,label}' FROM activities WHERE id='b1141-w2-us-them') = 'Both' AND (SELECT config #>> '{categories,2,label}' FROM activities WHERE id='b1141-w3-political-or-non-political-candc') = 'Contested' AND (SELECT config #>> '{categories,1,label}' FROM activities WHERE id='b1141-w4-design-an-inclusive-sport') = 'Familiar arrangement' AND (SELECT title FROM activities WHERE id='b1141-w8-four-technological-interventions') = 'What Counts as an Advantage?' AND (SELECT config #>> '{items,5,content}' FROM activities WHERE id='b1141-w9-the-comparison') = 'One tournament was extraordinarily geographically concentrated and the other extraordinarily geographically dispersed.');",
       "verify_expected": "t"
+    },
+    {
+      "id": "005",
+      "filename": "005_cc01_sequential_reference_revision.sql",
+      "path": "backend/migrations/005_cc01_sequential_reference_revision.sql",
+      "git_blob_sha": "52f3fa812563ce9b9d902e0312d5a96921d8bcce",
+      "description": "Revise CC01 as the sequential mobile-first reference activity while preserving existing session snapshots and activation state",
+      "verify_sql": "SELECT ((SELECT jsonb_array_length(config->'items') FROM activities WHERE id='b1141-w1-language-and-assumptions-candc') = 7 AND (SELECT config #>> '{items,0,id}' FROM activities WHERE id='b1141-w1-language-and-assumptions-candc') = 'aggressive_woman' AND (SELECT config #>> '{items,1,id}' FROM activities WHERE id='b1141-w1-language-and-assumptions-candc') = 'natural_black_winger' AND (SELECT config #>> '{items,5,id}' FROM activities WHERE id='b1141-w1-language-and-assumptions-candc') = 'worked_white_winger' AND (SELECT config #>> '{classification,prompt}' FROM activities WHERE id='b1141-w1-language-and-assumptions-candc') = 'What social assumption, if any, might sit behind this wording?');",
+      "verify_expected": "t"
     }
   ],
   "postflight": [
