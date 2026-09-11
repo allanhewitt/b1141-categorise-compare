@@ -1,6 +1,8 @@
 import { resolveCandCPublicId } from "./public-aliases.js";
 
-export const API_BASE = import.meta.env.VITE_API_BASE || "http://localhost:4000";
+// Consolidated production deployments use the current origin. VITE_API_BASE remains
+// available as a transition/development override for the older split deployment.
+export const API_BASE = (import.meta.env.VITE_API_BASE || "").replace(/\/$/, "");
 const ROOT = `${API_BASE}/api/candc`;
 
 async function request(path, options = {}) {
