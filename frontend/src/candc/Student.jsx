@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
 import { candcApi } from "./api.js";
+import { copyText } from "./copy.js";
 import { CANDC_PROFILE, categoryColor, profileVars } from "./profile.js";
 import {
   chooseExplicitNone,
@@ -242,11 +243,11 @@ export default function CandCStudent() {
   }
 
   if (trace.completed) {
-    return <div className="candc-app" style={profileVars()}><main className="candc-finish"><div className="candc-eyebrow">Done</div><h1>You’ve completed this activity.</h1><p>The important question is not whether everyone agrees. It is what the different readings reveal about how people interpret the same case.</p></main></div>;
+    return <div className="candc-app" style={profileVars()}><main className="candc-finish"><div className="candc-eyebrow">{copyText(config, "completion.eyebrow", "Done")}</div><h1>{copyText(config, "completion.heading", "You’ve completed this activity.")}</h1><p>{copyText(config, "completion.text", "The important question is not whether everyone agrees. It is what the different readings reveal about how people interpret the same case.")}</p></main></div>;
   }
 
   if (committed && !session.revealed) {
-    return <div className="candc-app" style={profileVars()}><main className="candc-wait"><div className="candc-orbit"/><div className="candc-eyebrow">Choices submitted</div><h1>Your choices are locked in.</h1><p>We’ll compare how the room interpreted the cases shortly.</p><span className="candc-countnote">{aggregate?.response_count || 0} responses in</span></main></div>;
+    return <div className="candc-app" style={profileVars()}><main className="candc-wait"><div className="candc-orbit"/><div className="candc-eyebrow">{copyText(config, "waiting.eyebrow", "Choices submitted")}</div><h1>{copyText(config, "waiting.heading", "Your choices are locked in.")}</h1><p>{copyText(config, "waiting.text", "We’ll compare how the room interpreted the cases shortly.")}</p><span className="candc-countnote">{aggregate?.response_count || 0} responses in</span></main></div>;
   }
 
   if (committed && session.revealed && guidance) {
@@ -254,14 +255,14 @@ export default function CandCStudent() {
     const item = guidance.item || diagnosticItem;
     return <div className="candc-app" style={profileVars()}>
       <main className="candc-shell candc-student-shell" style={{ paddingBottom: 110 }}>
-        <header className="candc-student-header"><div className="candc-eyebrow">A case worth looking at again</div><h1>What might explain the different readings?</h1></header>
+        <header className="candc-student-header"><div className="candc-eyebrow">{copyText(config, "diagnostic.eyebrow", "A case worth looking at again")}</div><h1>{copyText(config, "diagnostic.heading", "What might explain the different readings?")}</h1></header>
         <section className="candc-reflect-stack">
           <CaseCard item={item}><small className="candc-original-choice">Your original choice: {responseLabels(config, original).join(", ")}</small></CaseCard>
           <div className="candc-guidance-questions">{(guidance.guidance || []).map((block, i) => <div className="candc-question" key={i}>{block.text || block}</div>)}</div>
           <div className="candc-resolution candc-resolution-wide">
             <h2>{guidance.resolution.prompt || "Looking at it again, where are you now?"}</h2>
             <div className="candc-resolution-options">{guidance.resolution.options.map((option) => <button key={option.id} className={resolutionState === option.id ? "selected" : ""} onClick={() => { setResolutionState(option.id); setRevision(original); }}>{option.label}</button>)}</div>
-            {changedOption && <div className="candc-revision"><p>Change the labels for this case only.</p>{config.categories.map((cat, i) => {
+            {changedOption && <div className="candc-revision"><p>{copyText(config, "diagnostic.revision_instruction", "Change the labels for this case only.")}</p>{config.categories.map((cat, i) => {
               const selected = revision?.category_ids?.includes(cat.id);
               return <button key={cat.id} className={selected ? "selected" : ""} style={{ "--cat": categoryColor(i, CANDC_PROFILE) }} onClick={() => setRevision(toggleCategory(config, revision, cat.id))}>{cat.label}</button>;
             })}{config.classification.explicit_none?.enabled && <button className={revision?.explicit_none ? "selected" : ""} onClick={() => setRevision(chooseExplicitNone(!revision?.explicit_none))}>{config.classification.explicit_none.label}</button>}</div>}
@@ -277,27 +278,28 @@ export default function CandCStudent() {
 
   if (committed && session.revealed && aggregate?.revealed) {
     return <div className="candc-app" style={profileVars()}><main className="candc-shell candc-student-shell" style={{ paddingBottom: 110 }}>
-      <header className="candc-student-header"><div className="candc-eyebrow">How did the room read these cases?</div><h1>Look for where responses clustered — and where they differed.</h1></header>
+      <header className="candc-student-header"><div className="candc-eyebrow">{copyText(config, "comparison.student_eyebrow", "How did the room read these cases?")}</div><h1>{copyText(config, "comparison.heading", "Look for where responses clustered — and where they differed.")}</h1></header>
       <section className="candc-results-list">{config.items.map((item, i) => <article className={`candc-result-card candc-result-card-context ${item.id === diagnosticId ? "focus" : ""}`} key={item.id}><div className="candc-case-number">Case {i + 1}</div><ContextBlock value={item.optional_context} compact/><h3>{item.content}</h3><ResultBars config={config} itemId={item.id} aggregate={aggregate}/></article>)}</section>
-      {diagnosticItem && <div className="candc-focus-callout"><strong>This case produced the widest spread of responses.</strong><ContextBlock value={diagnosticItem.optional_context} compact/><span>{diagnosticItem.content}</span></div>}
+      {diagnosticItem && <div className="candc-focus-callout"><strong>{copyText(config, "comparison.diagnostic_note", "This case produced the widest spread of responses.")}</strong><ContextBlock value={diagnosticItem.optional_context} compact/><span>{diagnosticItem.content}</span></div>}
       {error && <p className="candc-error">{error}</p>}
       <StickyActionBar label={`${config.items.length} cases compared`}>
-        <button className="candc-primary candc-large-action" disabled={busy} onClick={openGuidance}>Look more closely</button>
+        <button className="candc-primary candc-large-action" disabled={busy} onClick={openGuidance}>{copyText(config, "comparison.action", "Look more closely")}</button>
       </StickyActionBar>
     </main></div>;
   }
 
   if (phase === "intro") {
-    return <div className="candc-app" style={profileVars()}><main className="candc-entry-screen"><div className="candc-eyebrow">What do you notice?</div><h1>{activity.title}</h1><p>{config.entry.text}</p><p className="candc-entry-note">You can change your answers before you finish.</p><button className="candc-primary candc-large-action" onClick={() => setPhase("cases")}>Start</button></main></div>;
+    return <div className="candc-app" style={profileVars()}><main className="candc-entry-screen"><div className="candc-eyebrow">{copyText(config, "entry.eyebrow", "What do you notice?")}</div><h1>{activity.title}</h1><p>{config.entry.text}</p><p className="candc-entry-note">{copyText(config, "entry.note", "You can change your answers before you finish.")}</p><button className="candc-primary candc-large-action" onClick={() => setPhase("cases")}>Start</button></main></div>;
   }
 
   if (phase === "review") {
     return <div className="candc-app" style={profileVars()}><main className="candc-shell candc-student-shell" style={{ paddingBottom: 118 }}>
-      <header className="candc-student-header"><div className="candc-eyebrow">Review your choices</div><h1>Have a look across the full set before you finish.</h1><p>You can still change anything.</p></header>
+      <header className="candc-student-header"><div className="candc-eyebrow">{copyText(config, "review.eyebrow", "Review your choices")}</div><h1>{copyText(config, "review.heading", "Have a look across the full set before you finish.")}</h1><p>{copyText(config, "review.instruction", "You can still change anything.")}</p></header>
       <section className="candc-review-list">{config.items.map((item, i) => <article className="candc-review-card" style={{ padding: "12px 14px", gap: 12 }} key={item.id}><div><div className="candc-case-number">Case {i + 1}</div><ReviewContextBlock value={item.optional_context}/><h3>{item.content}</h3><p>{responseLabels(config, responseFor(working, item.id)).join(", ")}</p></div><button className="candc-secondary" onClick={() => { setIndex(i); setPhase("cases"); }}>Edit</button></article>)}</section>
       {error && <p className="candc-error">{error}</p>}
-      <StickyActionBar label={confirming ? "Submit these choices? They stay locked until the group comparison." : `${done} of ${config.items.length} reviewed`}>
+      <StickyActionBar label={confirming ? copyText(config, "review.confirm_text", "Submit these choices? They stay locked until the group comparison.") : `${done} of ${config.items.length} reviewed`}>
         {!confirming ? <button className="candc-primary candc-large-action" disabled={!completeSet(config, working) || busy} onClick={() => setConfirming(true)}>Finish sorting</button> : <>
+          <span style={{ color: "#eef3f0", fontWeight: 750 }}>{copyText(config, "review.confirm_heading", "Finish and submit these choices?")}</span>
           <button className="candc-secondary" onClick={() => setConfirming(false)}>Go back</button>
           <button className="candc-primary" disabled={busy} onClick={commit}>Submit</button>
         </>}
