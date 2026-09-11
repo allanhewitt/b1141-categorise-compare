@@ -47,6 +47,24 @@
       "description": "Revise CC01 as the sequential mobile-first reference activity while preserving existing session snapshots and activation state",
       "verify_sql": "SELECT ((SELECT jsonb_array_length(config->'items') FROM activities WHERE id='b1141-w1-language-and-assumptions-candc') = 7 AND (SELECT config #>> '{items,0,id}' FROM activities WHERE id='b1141-w1-language-and-assumptions-candc') = 'aggressive_woman' AND (SELECT config #>> '{items,1,id}' FROM activities WHERE id='b1141-w1-language-and-assumptions-candc') = 'natural_black_winger' AND (SELECT config #>> '{items,5,id}' FROM activities WHERE id='b1141-w1-language-and-assumptions-candc') = 'worked_white_winger' AND (SELECT config #>> '{classification,prompt}' FROM activities WHERE id='b1141-w1-language-and-assumptions-candc') = 'What social assumption, if any, might sit behind this wording?');",
       "verify_expected": "t"
+    },
+    {
+      "id": "006",
+      "filename": "006_cc01_context_wording_revision.sql",
+      "path": "backend/migrations/006_cc01_context_wording_revision.sql",
+      "git_blob_sha": "f98a443b6ad1f262829ee56c7837d26b15385dfa",
+      "description": "Make CC01 Setting and About wording read as logically linked contextual statements while preserving session snapshots",
+      "verify_sql": "SELECT ((SELECT config #>> '{items,0,optional_context,setting}' FROM activities WHERE id='b1141-w1-language-and-assumptions-candc') = 'A coach is meeting with the other coaches in the team.' AND (SELECT config #>> '{items,0,optional_context,target_or_subject}' FROM activities WHERE id='b1141-w1-language-and-assumptions-candc') = 'They are discussing one of the women players.' AND (SELECT config #>> '{items,1,optional_context,setting}' FROM activities WHERE id='b1141-w1-language-and-assumptions-candc') = (SELECT config #>> '{items,5,optional_context,setting}' FROM activities WHERE id='b1141-w1-language-and-assumptions-candc') AND (SELECT config #>> '{items,0,optional_context,setting}' FROM activities WHERE id='b1141-w1-language-and-assumptions-candc') = (SELECT config #>> '{items,6,optional_context,setting}' FROM activities WHERE id='b1141-w1-language-and-assumptions-candc'));",
+      "verify_expected": "t"
+    },
+    {
+      "id": "007",
+      "filename": "007_cc01_configurable_copy.sql",
+      "path": "backend/migrations/007_cc01_configurable_copy.sql",
+      "git_blob_sha": "11986883d86a2ff9fa75134afe2e527050920032",
+      "description": "Move CC01 pedagogical framing copy into activity configuration for reuse and future activity-specific wording",
+      "verify_sql": "SELECT ((SELECT config #>> '{copy,comparison,heading}' FROM activities WHERE id='b1141-w1-language-and-assumptions-candc') = 'Look for where responses clustered — and where they differed.' AND (SELECT config #>> '{copy,diagnostic,heading}' FROM activities WHERE id='b1141-w1-language-and-assumptions-candc') = 'What might explain the different readings?' AND (SELECT config #>> '{copy,presentation,room_response_heading}' FROM activities WHERE id='b1141-w1-language-and-assumptions-candc') = 'Room response');",
+      "verify_expected": "t"
     }
   ],
   "postflight": [
