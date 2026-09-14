@@ -8,6 +8,7 @@ import CandCStudent from "./candc/Student.jsx";
 import CandCLecturer from "./candc/Lecturer.jsx";
 import CandCPresentation from "./candc/Presentation.jsx";
 import { CANDC_PUBLIC_ALIASES } from "./candc/public-aliases.js";
+import "./candc/portal-return.js";
 import "./styles.css";
 import "./flow.css";
 import "./candc/candc.css";
