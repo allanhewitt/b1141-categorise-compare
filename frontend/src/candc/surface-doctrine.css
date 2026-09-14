@@ -1,0 +1,227 @@
+/*
+ * GDL surface doctrine
+ * Student = quiet. Lecturer = functional. Presentation = expressive.
+ * These rules deliberately differentiate the three surfaces without changing
+ * the activity mechanic, information architecture, or model identity.
+ */
+
+/* STUDENT — quiet: reduce chrome and keep the current judgement dominant. */
+.candc-app .candc-student-shell {
+  width: min(100%, 840px);
+  padding-top: clamp(22px, 4vh, 44px);
+  padding-bottom: 92px;
+}
+
+.candc-app .candc-student-shell .candc-eyebrow {
+  opacity: .72;
+  letter-spacing: .065em;
+}
+
+.candc-app .candc-student-shell .candc-student-header {
+  margin-bottom: 18px;
+}
+
+.candc-app .candc-student-shell .candc-student-header h1 {
+  max-width: 17ch;
+  font-size: clamp(1.9rem, 4vw, 3.25rem);
+  line-height: 1.02;
+}
+
+.candc-app .candc-student-shell .candc-progress {
+  height: 4px;
+  opacity: .78;
+}
+
+.candc-app .candc-student-shell .candc-case-card {
+  border-radius: 22px;
+  box-shadow: 0 14px 38px rgba(0, 0, 0, .16);
+}
+
+.candc-app .candc-student-shell .candc-case-card blockquote {
+  font-size: clamp(1.6rem, 3.7vw, 2.9rem);
+  line-height: 1.1;
+}
+
+.candc-app .candc-student-shell .candc-tag-grid button,
+.candc-app .candc-student-shell .candc-revision button {
+  transition: border-color .14s ease, background-color .14s ease, box-shadow .14s ease;
+}
+
+.candc-app .candc-student-shell .candc-tag-grid button:hover:not(:disabled),
+.candc-app .candc-student-shell .candc-revision button:hover:not(:disabled) {
+  transform: none;
+}
+
+.candc-app .candc-student-shell .candc-question,
+.candc-app .candc-student-shell .candc-resolution {
+  box-shadow: none;
+}
+
+/* LECTURER — functional: status, response volume and actions read first. */
+.candc-app .candc-lecturer {
+  width: min(100%, 1260px);
+  padding-top: 20px;
+}
+
+.candc-app .candc-lecturer .candc-control-head {
+  align-items: center;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--candc-line);
+}
+
+.candc-app .candc-lecturer .candc-control-head h1 {
+  font-size: clamp(1.65rem, 3vw, 2.65rem);
+}
+
+.candc-app .candc-lecturer .candc-control-status span {
+  display: inline-flex;
+  align-items: center;
+  min-height: 34px;
+  white-space: nowrap;
+}
+
+.candc-app .candc-lecturer .candc-control-grid {
+  grid-template-columns: 265px minmax(0, 1fr);
+  gap: 12px;
+}
+
+.candc-app .candc-lecturer .candc-control-side {
+  gap: 10px;
+  padding: 12px;
+  border-radius: 16px;
+  background: rgba(12, 18, 15, .88);
+  box-shadow: 0 14px 34px rgba(0, 0, 0, .14);
+}
+
+.candc-app .candc-lecturer .candc-metric {
+  padding: 12px 13px;
+  border: 1px solid var(--candc-line);
+}
+
+.candc-app .candc-lecturer .candc-metric b {
+  font-size: 2.35rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.candc-app .candc-lecturer .candc-control-block {
+  padding-top: 10px;
+}
+
+.candc-app .candc-lecturer .candc-control-block p {
+  margin-bottom: 8px;
+}
+
+.candc-app .candc-lecturer .candc-control-main {
+  padding: 14px;
+}
+
+.candc-app .candc-lecturer .candc-lecturer-results {
+  gap: 9px;
+}
+
+.candc-app .candc-lecturer .candc-result-card {
+  padding: 13px;
+  border-radius: 14px;
+}
+
+/* PRESENTATION — expressive: cohort structure becomes the visual object. */
+.candc-app.candc-presentation {
+  background:
+    radial-gradient(circle at 82% 16%, rgba(215, 255, 112, .09), transparent 31rem),
+    radial-gradient(circle at 12% 84%, rgba(102, 214, 186, .065), transparent 34rem),
+    var(--candc-bg);
+}
+
+.candc-app.candc-presentation .candc-projector-collect,
+.candc-app.candc-presentation .candc-projector-results {
+  position: relative;
+  isolation: isolate;
+}
+
+.candc-app.candc-presentation .candc-projector-collect::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  width: min(46vw, 640px);
+  aspect-ratio: 1;
+  right: 3vw;
+  bottom: -18vh;
+  border: 1px solid rgba(215, 255, 112, .14);
+  border-radius: 50%;
+  box-shadow:
+    0 0 0 5vw rgba(215, 255, 112, .025),
+    0 0 0 10vw rgba(215, 255, 112, .018);
+}
+
+.candc-app.candc-presentation .candc-projector-count {
+  color: var(--candc-accent);
+  font-variant-numeric: tabular-nums;
+  text-shadow: 0 16px 52px rgba(0, 0, 0, .26);
+  animation: candc-count-arrive .45s cubic-bezier(.2, .75, .2, 1) both;
+}
+
+.candc-app.candc-presentation .candc-gallery-grid {
+  perspective: 1200px;
+}
+
+.candc-app.candc-presentation .candc-gallery-card {
+  animation: candc-card-arrive .42s cubic-bezier(.2, .75, .2, 1) both;
+}
+
+.candc-app.candc-presentation .candc-gallery-card:nth-child(2n) { animation-delay: 45ms; }
+.candc-app.candc-presentation .candc-gallery-card:nth-child(3n) { animation-delay: 90ms; }
+
+.candc-app.candc-presentation .candc-gallery-card.diagnostic {
+  background:
+    linear-gradient(160deg, rgba(215, 255, 112, .085), rgba(215, 255, 112, .018)),
+    linear-gradient(160deg, #1d2723, #151c19);
+}
+
+.candc-app.candc-presentation .candc-bar i {
+  transition: width .65s cubic-bezier(.2, .8, .2, 1);
+}
+
+.candc-app.candc-presentation .candc-focus-overlay {
+  backdrop-filter: blur(12px);
+}
+
+.candc-app.candc-presentation .candc-focus-panel {
+  animation: candc-focus-arrive .3s cubic-bezier(.2, .75, .2, 1) both;
+}
+
+@keyframes candc-count-arrive {
+  from { opacity: .15; transform: translateY(12px) scale(.96); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes candc-card-arrive {
+  from { opacity: 0; transform: translateY(14px) rotateX(2deg); }
+  to { opacity: 1; transform: translateY(0) rotateX(0); }
+}
+
+@keyframes candc-focus-arrive {
+  from { opacity: 0; transform: translateY(16px) scale(.985); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@media (max-width: 820px) {
+  .candc-app .candc-lecturer .candc-control-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .candc-app .candc-lecturer .candc-control-side {
+    position: static;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .candc-app.candc-presentation .candc-projector-count,
+  .candc-app.candc-presentation .candc-gallery-card,
+  .candc-app.candc-presentation .candc-focus-panel {
+    animation: none;
+  }
+
+  .candc-app.candc-presentation .candc-bar i {
+    transition: none;
+  }
+}

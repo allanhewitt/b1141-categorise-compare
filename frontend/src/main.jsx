@@ -12,6 +12,7 @@ import "./candc/portal-return.js";
 import "./styles.css";
 import "./flow.css";
 import "./candc/candc.css";
+import "./candc/surface-doctrine.css";
 
 function normalizeLegacyHashRoute() {
   const hash = window.location.hash;
