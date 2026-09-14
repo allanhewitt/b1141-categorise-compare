@@ -46,9 +46,18 @@ export default function CandCLecturer() {
       if (!activity) setActivity(a);
       let s;
       try { s = await candcApi.sessionForActivity(id); }
-      catch (e) { if (e.status === 404) { setSession(null); setAggregate(null); return; } throw e; }
+      catch (e) {
+        if (e.status === 404) {
+          setSession(null);
+          setAggregate(null);
+          setError("");
+          return;
+        }
+        throw e;
+      }
       setSession(s);
       setAggregate(await candcApi.aggregate(s.id));
+      setError("");
     } catch (e) { setError(e.message); }
   }
 
@@ -72,19 +81,19 @@ export default function CandCLecturer() {
   const diagnostic = config.items.find((item) => item.id === aggregate?.diagnostic_item_id);
 
   return <div className="candc-app" style={profileVars()}><main className="candc-shell candc-lecturer">
-    <header className="candc-control-head"><div><div className="candc-eyebrow">Live control</div><h1>{activity.title}</h1></div><div className="candc-control-status"><span>{session ? (session.revealed ? "Group responses shown" : "Collecting responses") : "No open session"}</span></div></header>
+    <header className="candc-control-head"><div><div className="candc-eyebrow">Live control</div><h1>{activity.title}</h1></div><div className="candc-control-status"><span>{session ? (session.revealed ? "Group responses shown" : "Collecting responses") : "Waiting for scheduled activity"}</span></div></header>
     <section className="candc-control-grid">
       <aside className="candc-control-side">
         <div className="candc-metric"><b>{aggregate?.response_count || 0}</b><span>responses submitted</span></div>
         <label className="candc-key"><span>Facilitator key</span><input type="password" value={key} onChange={(e) => setKey(e.target.value)} autoComplete="off"/></label>
-        {!session && <div className="candc-control-block"><h3>Session</h3><p>Open a fresh session when the activity is ready to begin.</p><button className="candc-primary" disabled={busy} onClick={() => act(() => candcApi.openSession(id, key))}>Open session</button></div>}
+        {!session && <div className="candc-control-block"><h3>Scheduled run</h3><p>This view will connect automatically when the activity becomes available through the CRUD schedule.</p></div>}
         {session && !session.revealed && <div className="candc-control-block"><h3>Group responses</h3><p>The response pattern remains hidden until you release it to the room.</p><button className="candc-primary" disabled={busy || !aggregate?.response_count} onClick={() => act(() => candcApi.reveal(session.id, key))}>Show group responses</button></div>}
         {session && <div className="candc-control-block"><h3>Room view</h3><p>Open the projection view. Cards can be enlarged during discussion.</p><a className="candc-button-link" href={`/#/stage3/display/${id}`} target="_blank" rel="noreferrer">Open presentation</a></div>}
         {session && <div className="candc-control-block"><h3>Session</h3><button className="candc-secondary" disabled={busy} onClick={() => act(() => candcApi.close(session.id, key))}>End session</button></div>}
         {error && <p className="candc-error">{error}</p>}
       </aside>
       <div className="candc-control-main">
-        {!session?.revealed || !aggregate?.revealed ? <div className="candc-hidden-state"><div className="candc-orbit"/><h2>Response pattern hidden</h2><p>You can see how many students have submitted without seeing how they classified the cases.</p></div> : <>
+        {!session ? <div className="candc-hidden-state"><div className="candc-orbit"/><h2>Waiting for the scheduled activity</h2><p>The lecturer view will attach automatically when the current CRUD window opens.</p></div> : !session.revealed || !aggregate?.revealed ? <div className="candc-hidden-state"><div className="candc-orbit"/><h2>Response pattern hidden</h2><p>You can see how many students have submitted without seeing how they classified the cases.</p></div> : <>
           <div className="candc-control-title"><div><h2>Group responses</h2><p>Each card now includes the context needed to interpret the statement.</p></div></div>
           <div className="candc-results-grid candc-lecturer-results">{config.items.map((item, i) => <article className={`candc-result-card candc-result-card-context ${item.id === aggregate.diagnostic_item_id ? "focus" : ""}`} key={item.id}><div className="candc-case-number">Case {i + 1}</div><ContextBlock value={item.optional_context}/><h3>{item.content}</h3><Bars config={config} itemId={item.id} aggregate={aggregate}/></article>)}</div>
           {diagnostic && <div className="candc-focus-callout candc-discussion-callout"><strong>Suggested discussion case</strong><ContextBlock value={diagnostic.optional_context}/><span>{diagnostic.content}</span><small>{copyText(config, "comparison.lecturer_diagnostic_note", "This case produced the widest spread of responses in the frozen group response.")}</small></div>}
