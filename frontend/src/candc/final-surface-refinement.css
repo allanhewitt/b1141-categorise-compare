@@ -1,0 +1,297 @@
+/*
+ * Final Week 1 surface refinement.
+ * Student = quiet, warm, mobile-first.
+ * Lecturer = functional.
+ * Presentation = creative, room-scale and pedagogically expressive.
+ */
+
+/* STUDENT — bring C&C into the warm GRW personal-device family. */
+.candc-app:has(.candc-student-shell),
+.candc-app:has(.candc-entry-screen),
+.candc-app:has(.candc-wait),
+.candc-app:has(.candc-finish) {
+  --candc-bg: #f3f0e8;
+  --candc-panel: #fffef9;
+  --candc-panel-raised: #ece8dd;
+  --candc-paper: #fffef9;
+  --candc-paper-ink: #182321;
+  --candc-text: #182321;
+  --candc-muted: #5f6b67;
+  --candc-accent: #0b6b61;
+  --candc-accent-ink: #ffffff;
+  --candc-line: rgba(24, 35, 33, .12);
+  color: var(--candc-text);
+  background:
+    radial-gradient(circle at 88% 4%, rgba(11, 107, 97, .055), transparent 20rem),
+    #f3f0e8;
+}
+
+.candc-app .candc-student-shell,
+.candc-app .candc-entry-screen,
+.candc-app .candc-wait,
+.candc-app .candc-finish {
+  color: #182321;
+}
+
+.candc-app .candc-student-shell {
+  min-height: 100vh;
+}
+
+.candc-app .candc-student-shell .candc-eyebrow,
+.candc-app .candc-entry-screen .candc-eyebrow,
+.candc-app .candc-wait .candc-eyebrow,
+.candc-app .candc-finish .candc-eyebrow {
+  color: #0b6b61;
+  opacity: 1;
+}
+
+.candc-app .candc-entry-screen p,
+.candc-app .candc-wait p,
+.candc-app .candc-finish p,
+.candc-app .candc-student-header p,
+.candc-app .candc-student-shell .candc-sequential-nav span {
+  color: #5f6b67;
+}
+
+.candc-app .candc-student-shell .candc-case-card {
+  background: #fffef9;
+  color: #182321;
+  border: 1px solid rgba(24, 35, 33, .10);
+  box-shadow: 0 14px 38px rgba(24, 35, 33, .055);
+}
+
+.candc-app .candc-student-shell .candc-context-block > div {
+  background: rgba(24, 35, 33, .035);
+  border-color: rgba(24, 35, 33, .09);
+}
+
+.candc-app .candc-student-shell .candc-context-block span {
+  color: #6a756f;
+}
+
+.candc-app .candc-student-shell .candc-context-block strong,
+.candc-app .candc-student-shell .candc-result-card-context .candc-context-block strong {
+  color: #25302b;
+}
+
+.candc-app .candc-student-shell .candc-result-card-context .candc-context-block span {
+  color: #6a756f;
+}
+
+.candc-app .candc-student-shell .candc-tag-grid button,
+.candc-app .candc-student-shell .candc-resolution-options button,
+.candc-app .candc-student-shell .candc-revision button,
+.candc-app .candc-student-shell .candc-secondary {
+  color: #182321;
+  background: #fffef9;
+  border-color: rgba(24, 35, 33, .14);
+  box-shadow: none;
+}
+
+.candc-app .candc-student-shell .candc-tag-grid button.selected,
+.candc-app .candc-student-shell .candc-resolution-options button.selected,
+.candc-app .candc-student-shell .candc-revision button.selected {
+  border-color: #0b6b61;
+  box-shadow: 0 0 0 2px #0b6b61 inset;
+  background: #e2f1ec;
+}
+
+.candc-app .candc-student-shell .candc-primary,
+.candc-app .candc-entry-screen .candc-primary {
+  color: #fff;
+  background: #0b6b61;
+}
+
+.candc-app .candc-student-shell .candc-review-card,
+.candc-app .candc-student-shell .candc-result-card,
+.candc-app .candc-student-shell .candc-resolution,
+.candc-app .candc-student-shell .candc-question {
+  color: #182321;
+  background: #fffef9;
+  border-color: rgba(24, 35, 33, .10);
+  box-shadow: none;
+}
+
+.candc-app .candc-student-shell .candc-review-card p {
+  color: #5f6b67;
+}
+
+.candc-app .candc-student-shell .candc-focus-callout {
+  color: #17483f;
+  background: #e4f1ec;
+  border-color: rgba(11, 107, 97, .18);
+}
+
+.candc-app .candc-student-shell .candc-focus-callout .candc-context-block > div {
+  background: rgba(255, 255, 255, .48);
+  border-color: rgba(11, 107, 97, .12);
+}
+
+.candc-app .candc-student-shell .candc-focus-callout .candc-context-block strong,
+.candc-app .candc-student-shell .candc-focus-callout .candc-context-block span {
+  color: #17483f;
+}
+
+.candc-app .candc-wait .candc-orbit {
+  border-color: rgba(11, 107, 97, .22);
+}
+
+.candc-app .candc-wait .candc-orbit::before,
+.candc-app .candc-wait .candc-orbit::after {
+  border-color: rgba(11, 107, 97, .26);
+}
+
+.candc-app .candc-wait .candc-orbit::after {
+  background: rgba(11, 107, 97, .06);
+}
+
+.candc-app .candc-wait .candc-countnote {
+  color: #0b6b61;
+}
+
+/* Phone is the reference student layout. */
+@media (max-width: 700px) {
+  .candc-app .candc-student-shell {
+    min-height: 100dvh;
+    width: 100%;
+    padding: 18px 14px 96px;
+  }
+
+  .candc-app .candc-entry-screen,
+  .candc-app .candc-wait,
+  .candc-app .candc-finish {
+    min-height: 100dvh;
+    padding: 26px 18px;
+  }
+
+  .candc-app .candc-entry-screen h1,
+  .candc-app .candc-wait h1,
+  .candc-app .candc-finish h1,
+  .candc-app .candc-student-header h1 {
+    max-width: 15ch;
+    font-size: clamp(2rem, 9vw, 2.8rem);
+    line-height: 1.01;
+  }
+
+  .candc-app .candc-student-shell .candc-case-card {
+    gap: 13px;
+    padding: 18px;
+    border-radius: 20px;
+  }
+
+  .candc-app .candc-student-shell .candc-case-card blockquote {
+    font-size: clamp(1.45rem, 6.8vw, 2.1rem);
+    line-height: 1.12;
+  }
+
+  .candc-app .candc-student-shell .candc-context-block,
+  .candc-app .candc-student-shell .candc-tag-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .candc-app .candc-student-shell .candc-tag-grid button,
+  .candc-app .candc-student-shell .candc-resolution-options button,
+  .candc-app .candc-student-shell .candc-revision button,
+  .candc-app .candc-student-shell .candc-primary,
+  .candc-app .candc-student-shell .candc-secondary {
+    min-height: 52px;
+  }
+
+  .candc-app .candc-student-shell .candc-sequential-nav {
+    grid-template-columns: 1fr 1fr;
+    gap: 9px;
+  }
+
+  .candc-app .candc-student-shell .candc-sequential-nav span {
+    grid-column: 1 / -1;
+    grid-row: 1;
+  }
+
+  .candc-app .candc-student-shell .candc-review-card {
+    grid-template-columns: 1fr;
+  }
+
+  .candc-app .candc-student-shell .candc-review-card > button {
+    width: 100%;
+  }
+}
+
+/* PRESENTATION — lean into a spatial case-gallery metaphor. */
+.candc-app.candc-presentation::before,
+.candc-app.candc-presentation::after {
+  content: "";
+  position: fixed;
+  pointer-events: none;
+  border-radius: 50%;
+}
+
+.candc-app.candc-presentation::before {
+  width: min(38vw, 560px);
+  aspect-ratio: 1;
+  top: -14vh;
+  right: -8vw;
+  border: 1px solid rgba(215, 255, 112, .13);
+  box-shadow: 0 0 0 5vw rgba(215, 255, 112, .02), 0 0 0 10vw rgba(215, 255, 112, .012);
+}
+
+.candc-app.candc-presentation::after {
+  width: min(30vw, 440px);
+  aspect-ratio: 1;
+  left: -9vw;
+  bottom: -18vh;
+  background: radial-gradient(circle, rgba(102, 214, 186, .065), transparent 68%);
+}
+
+.candc-app.candc-presentation .candc-gallery-grid {
+  position: relative;
+  z-index: 1;
+  gap: clamp(14px, 1.35vw, 24px);
+}
+
+.candc-app.candc-presentation .candc-gallery-card {
+  position: relative;
+  overflow: hidden;
+  min-height: 270px;
+  border-radius: 24px;
+  box-shadow: 0 18px 42px rgba(0, 0, 0, .18);
+}
+
+.candc-app.candc-presentation .candc-gallery-card::after {
+  content: "";
+  position: absolute;
+  inset: auto -20% -55% 45%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  border: 1px solid rgba(215, 255, 112, .11);
+  pointer-events: none;
+}
+
+.candc-app.candc-presentation .candc-gallery-card.diagnostic {
+  transform: translateY(-5px);
+  box-shadow: 0 24px 62px rgba(0, 0, 0, .26), 0 0 0 1px rgba(215, 255, 112, .22) inset, 0 0 48px rgba(215, 255, 112, .05);
+}
+
+.candc-app.candc-presentation .candc-top-responses b {
+  font-size: clamp(1.8rem, 2.7vw, 3.4rem);
+  letter-spacing: -.045em;
+}
+
+.candc-app.candc-presentation .candc-focus-panel {
+  box-shadow: 0 34px 110px rgba(0, 0, 0, .5), 0 0 90px rgba(215, 255, 112, .035);
+}
+
+.candc-app.candc-presentation .candc-focus-case blockquote {
+  font-size: clamp(2.2rem, 4.4vw, 5rem);
+  line-height: 1.02;
+  letter-spacing: -.045em;
+}
+
+.candc-app.candc-presentation .candc-focus-data .candc-bar i {
+  box-shadow: 0 0 22px rgba(215, 255, 112, .08);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .candc-app.candc-presentation .candc-gallery-card.diagnostic {
+    transform: none;
+  }
+}
