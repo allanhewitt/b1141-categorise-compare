@@ -9,7 +9,9 @@ function activityIdFromLocation() {
 }
 
 function lecturerKey() {
-  return window.sessionStorage.getItem("candc-lecturer-key") || "";
+  const stored = window.sessionStorage.getItem("candc-lecturer-key") || "";
+  if (stored) return stored;
+  return document.querySelector(".candc-key input")?.value?.trim() || "";
 }
 
 async function request(path, options = {}) {
@@ -39,7 +41,12 @@ function statusNode(container) {
 async function restartFresh(button, container) {
   const activityId = activityIdFromLocation();
   const key = lecturerKey();
-  if (!activityId || !key) return;
+  const status = statusNode(container);
+  if (!activityId) return;
+  if (!key) {
+    status.textContent = "Enter the facilitator key first, then try the restart again.";
+    return;
+  }
 
   const confirmed = window.confirm(
     "Abandon this run and start a completely fresh one?\n\n" +
@@ -48,7 +55,7 @@ async function restartFresh(button, container) {
   );
   if (!confirmed) return;
 
-  const status = statusNode(container);
+  window.sessionStorage.setItem("candc-lecturer-key", key);
   button.disabled = true;
   button.textContent = "Starting fresh run…";
   status.textContent = "Closing the current run…";
@@ -80,6 +87,8 @@ async function restartFresh(button, container) {
     button.textContent = "Fresh run started";
     window.setTimeout(() => {
       status.textContent = "";
+      button.disabled = false;
+      button.textContent = "Restart with fresh run";
     }, 12000);
   } catch (error) {
     status.textContent = `Recovery failed: ${error.message}. The previous run may already be closed; retry once or use CRUD if needed.`;
@@ -89,7 +98,7 @@ async function restartFresh(button, container) {
 }
 
 function install() {
-  if (!activityIdFromLocation() || !lecturerKey()) return;
+  if (!activityIdFromLocation()) return;
   if (document.getElementById(BUTTON_ID)) return;
 
   const endButton = Array.from(document.querySelectorAll(".candc-control-block button"))
